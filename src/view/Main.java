@@ -1,24 +1,20 @@
-package sample;
+package view;
 
+import controller.ButtonPropertiesController;
 import javafx.application.Application;
 
-import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Main extends Application {
 
@@ -31,7 +27,6 @@ public class Main extends Application {
 
         Label label = new Label("KBE PREMIUM");         // водяная метка приложения
         label.setStyle("-fx-font-size: xx-large; -fx-font-weight: bold; -fx-opacity: .1");
-
 
 
         Image handImage = new Image("https://pngimg.com/uploads/cursor/cursor_PNG87.png");          // иконка курсора
@@ -70,7 +65,6 @@ public class Main extends Application {
         saveAsImageView.setFitWidth(30);
 
 
-
         MenuButton fileButton = new MenuButton("File");         // кнопка файл на панели инструментов
         MenuItem newButton = new MenuItem("New");
         newButton.setGraphic(newImageView);
@@ -80,7 +74,7 @@ public class Main extends Application {
         saveButton.setGraphic(saveImageView);
         MenuItem saveAsButton = new MenuItem("Save as...");
         saveAsButton.setGraphic(saveAsImageView);
-        SeparatorMenuItem separator= new SeparatorMenuItem();
+        SeparatorMenuItem separator = new SeparatorMenuItem();
         fileButton.getItems().addAll(newButton, openButton, separator, saveButton, saveAsButton);
 
         MenuButton instrumentsButton = new MenuButton("Instruments");           // кнопка инструменты на панели инструментов
@@ -92,9 +86,16 @@ public class Main extends Application {
         edgeButton.setGraphic(edgeImageView);
         instrumentsButton.getItems().addAll(handButton, vertexButton, edgeButton);
 
+        MenuButton helpButton = new MenuButton("Help");         // кнопка помощь на панели инструментов
+        MenuItem helpText = new MenuItem();
+        helpText.setDisable(true);
+        helpText.setText("Use vertex to add a vertex \n" +
+                "Use edge to add an edge \n" +
+                "Use hand to pick vertex or edge");
+        helpButton.getItems().add(helpText);
 
 
-        ToolBar toolBar = new ToolBar(fileButton, instrumentsButton);           // панель инструментов
+        ToolBar toolBar = new ToolBar(fileButton, instrumentsButton, helpButton);           // панель инструментов
         toolBar.setOrientation(Orientation.HORIZONTAL);
         toolBar.setStyle("-fx-background-color: #CDCBA6;");
         ObservableList<Node> tools = toolBar.getItems();
@@ -103,13 +104,54 @@ public class Main extends Application {
         }
 
 
+        Button handB = new Button();
+        handB.setGraphic(handImageView);
 
-        BorderPane root = new BorderPane();
-        root.setTop(toolBar);
-        root.setCenter(label);
-        root.setStyle("-fx-background-color: #E7E7DE;");
+        Button vertexB = new Button();
+        vertexB.setGraphic(vertexImageView);
+        Button edgeB = new Button();
+        edgeB.setGraphic(edgeImageView);
 
-        Scene scene = new Scene(root, 600, 400);
+        ButtonPropertiesController handBController = new ButtonPropertiesController(handB);
+        handBController.setProperties(1.1, 1, Cursor.HAND);
+
+        ButtonPropertiesController vertexBController = new ButtonPropertiesController(vertexB);
+        vertexBController.setProperties(1.1, 1, Cursor.HAND);
+
+        ButtonPropertiesController edgeBController = new ButtonPropertiesController(edgeB);
+        edgeBController.setProperties(1.1, 1, Cursor.HAND);
+
+        VBox instruments = new VBox(handB, vertexB, edgeB);         // панель меню слева окна
+        instruments.setSpacing(10);
+
+
+        BorderPane emptyList = new BorderPane();
+        emptyList.setCenter(label);
+        emptyList.setStyle("-fx-background-color: #E7E7DE;");
+
+
+        GridPane root = new GridPane();
+        root.setGridLinesVisible(true);
+
+        RowConstraints row1 = new RowConstraints(toolBar.getMaxHeight(), toolBar.getMaxHeight(), Double.MAX_VALUE);
+        row1.setVgrow(Priority.NEVER);
+
+        RowConstraints row2 = new RowConstraints(emptyList.getMaxHeight(), emptyList.getMaxHeight(), Double.MAX_VALUE);
+        row2.setVgrow(Priority.ALWAYS);
+
+        ColumnConstraints col1 = new ColumnConstraints(emptyList.getMaxWidth(), emptyList.getMaxWidth(), Double.MAX_VALUE);
+        col1.setHgrow(Priority.ALWAYS);
+
+        root.getRowConstraints().add(row1);
+        root.getRowConstraints().add(row2);
+        root.getColumnConstraints().add(col1);
+
+        root.add(toolBar, 0, 0);
+        root.add(emptyList, 0, 1);
+
+
+        Scene scene = new Scene(root, 800, 450);
+
 
         stage.setScene(scene);
         stage.setResizable(true);
