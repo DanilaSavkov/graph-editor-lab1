@@ -6,17 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 
 public class ButtonPropertiesController {
-    private Button button;
-
-    public ButtonPropertiesController(Button button) {
-        this.button = button;
-    }
-
-    private void setEnterProperties(double scale, Cursor cursor) {
+    private static void setEnterProperties(Button button, Cursor cursor, double scale) {
         EventHandler<MouseEvent> mouseEnterHandler = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                System.out.println("Вы навели курсор на кнопку.");
+//                System.out.println("Вы навели курсор на кнопку.");
                 button.setScaleX(scale);
                 button.setScaleY(scale);
                 button.setCursor(cursor);
@@ -25,11 +19,11 @@ public class ButtonPropertiesController {
         button.setOnMouseEntered(mouseEnterHandler);
     }
 
-    private void setExitedProperties(double scale) {
+    private static void setExitedProperties(Button button, double scale) {
         EventHandler<MouseEvent> mouseExitedHandler = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                System.out.println("Вы убрали курсор с кнопки.");
+//                System.out.println("Вы убрали курсор с кнопки.");
                 button.setScaleX(scale);
                 button.setScaleY(scale);
             }
@@ -37,9 +31,8 @@ public class ButtonPropertiesController {
         button.setOnMouseExited(mouseExitedHandler);
     }
 
-    public void setProperties(double enterScale, double exitedScale, Cursor cursor) {
-        setEnterProperties(enterScale, cursor);
-        setExitedProperties(exitedScale);
+    public static void setProperties(Button button, Cursor cursor, double enterScale, double exitedScale) {
+        setEnterProperties(button, cursor, enterScale);
+        setExitedProperties(button, exitedScale);
     }
-
 }

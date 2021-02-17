@@ -7,7 +7,7 @@ public class MyAppRootGeneration {
 
     public static GridPane setRoot(MenuBar menuBar, Pane startPane) {
         GridPane root = new GridPane();
-        root.setGridLinesVisible(true);
+        root.setGridLinesVisible(false);
 
         RowConstraints row1 = new RowConstraints(menuBar.getMaxHeight(), menuBar.getMaxHeight(), Double.MAX_VALUE);
         row1.setVgrow(Priority.NEVER);

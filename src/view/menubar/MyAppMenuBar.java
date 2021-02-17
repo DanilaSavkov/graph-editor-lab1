@@ -9,7 +9,7 @@ import javafx.scene.image.ImageView;
 import static view.menubar.MenuGeneration.*;
 
 public class MyAppMenuBar {
-    public static MenuBar setMenuBar() {
+    public static MenuBar getMenuBar() {
         double imageSide = 25;
 
         ImageView handImage = getImageByProperties("https://pngimg.com/uploads/cursor/cursor_PNG87.png", imageSide);
@@ -31,9 +31,7 @@ public class MyAppMenuBar {
         Menu fileMenu = getMenuByMenuItems("File", newButton, openButton, new SeparatorMenuItem(), saveButton, saveAsButton);
         Menu toolsMenu = getMenuByMenuItems("Tools", handButton, vertexButton, edgeButton);
 
-        MenuBar menuBar = getMenuBarByMenus(fileMenu, toolsMenu);
-
-        return menuBar;
+        return getMenuBarByMenus(fileMenu, toolsMenu);
     }
 }
 
