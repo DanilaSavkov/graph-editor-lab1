@@ -1,11 +1,10 @@
-package view.root;
+package view.components;
 
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 
-public class MyAppRootGeneration {
-
-    public static GridPane setRoot(MenuBar menuBar, Pane startPane) {
+public class MyAppRoot {
+    public static GridPane generate(MenuBar menuBar, Pane startPane) {
         GridPane root = new GridPane();
         root.setGridLinesVisible(false);
 
@@ -22,7 +21,7 @@ public class MyAppRootGeneration {
 
         root.add(menuBar, 0, 0);
         root.add(startPane, 0, 1);
-        
+
         return root;
     }
 }
