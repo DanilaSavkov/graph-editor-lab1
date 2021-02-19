@@ -8,10 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import view.components.MyMenuBar;
-import view.components.MyAppWorkingWindow;
-import view.components.MyAppRoot;
-import view.components.MyToolBar;
+import view.components.*;
 
 public class Main extends Application {
     @Override
@@ -29,8 +26,8 @@ public class Main extends Application {
         startPane.setStyle("-fx-background-color: #E7E7DE;");
 
         // рабочая зона + панель инструментов
-        Pane list = new Pane();
-        ToolBarHandler.whenButtonIsOnAction(list);
+        MyPane list = new MyPane();
+//        ToolBarHandler.addVertex(list);
         list.setStyle("-fx-background-color: white;");
         ToolBar toolBar = new MyToolBar(list);
         toolBar.setStyle("");

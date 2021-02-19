@@ -7,7 +7,12 @@ public class Graph {
     private List<Edge> edges;
     private List<Vertex> vertices;
 
-    public boolean addVertex(int x, int y) {
+    public Graph() {
+        edges = new ArrayList<>();
+        vertices = new ArrayList<>();
+    }
+
+    public boolean addVertex(double x, double y) {
         Vertex toAdd = new Vertex(x, y);
         return vertices.add(toAdd);
     }
@@ -40,5 +45,13 @@ public class Graph {
             }
         }
         return result;
+    }
+
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public List<Vertex> getVertices() {
+        return vertices;
     }
 }

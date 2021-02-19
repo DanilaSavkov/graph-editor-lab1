@@ -10,9 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 public class MyToolBar extends ToolBar {
-    private Pane workingPlace;
+    private final MyPane workingPlace;
 
-    public MyToolBar(Pane workingPlace) {
+    public MyToolBar(MyPane workingPlace) {
         this.workingPlace = workingPlace;
         double imageSide = 30;
 
@@ -20,15 +20,15 @@ public class MyToolBar extends ToolBar {
         ImageView vertexImage = new MyImageView("https://static.thenounproject.com/png/80650-200.png", imageSide);
         ImageView edgeImage = new MyImageView("https://img.icons8.com/ios/452/line--v1.png", imageSide);
 
-        Button hand = new MyButton(this, handImage, Cursor.HAND);
-        Button vertex = new MyButton(this, vertexImage, Cursor.CROSSHAIR);
-        Button edge = new MyButton(this, edgeImage, Cursor.DEFAULT);
+        Button hand = new MyButton(this, null, Cursor.HAND, handImage);
+        Button vertex = new MyButton(this, ToolBarHandler.addVertex(workingPlace), Cursor.CROSSHAIR, vertexImage);
+        Button edge = new MyButton(this, null, Cursor.DEFAULT, edgeImage);
 
         this.getItems().addAll(hand, new Separator(), vertex, new Separator(), edge);
         this.setOrientation(Orientation.VERTICAL);
     }
 
-    public Pane getWorkingPlace() {
+    public MyPane getWorkingPlace() {
         return workingPlace;
     }
 }
