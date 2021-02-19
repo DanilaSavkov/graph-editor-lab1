@@ -5,17 +5,13 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 
 public class MyAppWorkingWindow {
-    public static GridPane generate() {
-        ToolBar toolBar = MyAppToolBar.generate();
-        Pane pane = getPaneBy("-fx-background-color: blue;");
-
+    public static GridPane generate(ToolBar toolBar, Pane pane) {
         GridPane gridPane = new GridPane();
         gridPane.setGridLinesVisible(false);
 
         ColumnConstraints col1 = new ColumnConstraints(toolBar.getMaxWidth());
         col1.setHgrow(Priority.NEVER);
         ColumnConstraints col2 = new ColumnConstraints(pane.getMaxWidth(), pane.getMaxWidth(), Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
-
         RowConstraints row1 = new RowConstraints(pane.getMaxHeight(), pane.getMaxHeight(), Double.MAX_VALUE);
         row1.setVgrow(Priority.ALWAYS);
 
@@ -26,11 +22,5 @@ public class MyAppWorkingWindow {
         gridPane.add(toolBar, 0, 0);
 
         return gridPane;
-    }
-
-    private static Pane getPaneBy(String style) {
-        Pane pane = new Pane();
-        pane.setStyle(style);
-        return pane;
     }
 }
