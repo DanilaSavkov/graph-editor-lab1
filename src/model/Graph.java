@@ -4,22 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
-    private List<Edge> edges;
-    private List<Vertex> vertices;
+    private final List<Edge> edges;
+    private final List<Vertex> vertices;
 
     public Graph() {
         edges = new ArrayList<>();
         vertices = new ArrayList<>();
     }
 
-    public boolean addVertex(double x, double y) {
-        Vertex toAdd = new Vertex(x, y);
-        return vertices.add(toAdd);
+    public boolean addVertex(Vertex vertex) {
+        return vertices.add(vertex);
     }
 
-    public boolean addEdge(Vertex beginVertex, Vertex endVertex) {
-        Edge toAdd = new Edge(beginVertex, endVertex);
-        return edges.add(toAdd);
+    public boolean addEdge(Edge edge) {
+        return edges.add(edge);
     }
 
     public boolean remove(Vertex vertex) {

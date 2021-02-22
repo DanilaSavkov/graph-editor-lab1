@@ -1,6 +1,5 @@
 package view;
 
-import handlers.ToolBarHandler;
 import javafx.application.Application;
 
 import javafx.scene.control.*;
@@ -27,7 +26,6 @@ public class Main extends Application {
 
         // рабочая зона + панель инструментов
         MyPane list = new MyPane();
-//        ToolBarHandler.addVertex(list);
         list.setStyle("-fx-background-color: white;");
         ToolBar toolBar = new MyToolBar(list);
         toolBar.setStyle("");

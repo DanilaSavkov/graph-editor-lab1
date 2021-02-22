@@ -6,7 +6,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.ImageView;
 
-
 public class MyMenuBar extends MenuBar {
     public MyMenuBar() {
         double imageSide = 25;
@@ -23,6 +22,7 @@ public class MyMenuBar extends MenuBar {
         MenuItem openButton = new MenuItem("Open", dirImage);
         MenuItem saveButton = new MenuItem("Save", saveImage);
         MenuItem saveAsButton = new MenuItem("Save as...", saveAsImage);
+
         MenuItem handButton = new MenuItem("Hand", handImage);
         MenuItem vertexButton = new MenuItem("Vertex", vertexImage);
         MenuItem edgeButton = new MenuItem("Edge", edgeImage);

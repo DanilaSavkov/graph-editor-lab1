@@ -1,29 +1,33 @@
 package view.components;
 
+import handlers.ButtonHandler;
+import handlers.PaneHandler;
+import handlers.VertexHandler;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
-import static handlers.ToolBarHandler.*;
-
 public class MyButton extends Button {
     private static final Cursor enteredCursor = Cursor.HAND;
     private static final double IMAGE_SCALE = 1.15;
+    private MyToolBar toolBar;
 
-    public MyButton(MyToolBar toolBar, EventHandler<MouseEvent> paneClick, Cursor onActionCursor, ImageView imageView) {
+    public MyButton(ImageView imageView) {
         this.setGraphic(imageView);
-        setMouseEvent(enteredCursor, IMAGE_SCALE);
-        setOnActionEvent(toolBar.getWorkingPlace(), onActionCursor, paneClick);
+        ButtonHandler buttonHandler = new ButtonHandler(this);
+        this.addEventFilter(MouseEvent.MOUSE_ENTERED, buttonHandler.mouseEnteredEvent(enteredCursor, IMAGE_SCALE));
+        this.addEventFilter(MouseEvent.MOUSE_EXITED, buttonHandler.mouseEnteredEvent(Cursor.DEFAULT, 1));
     }
 
-    private void setMouseEvent(Cursor cursor, double scale) {
-        this.setOnMouseEntered(getMouseEventHandler(this, cursor, scale));
-        this.setOnMouseExited(getMouseEventHandler(this, Cursor.DEFAULT, 1));
+    public void setPaneClickEvent(EventHandler<MouseEvent> paneClick) {
+        PaneHandler paneHandler = new PaneHandler(this.toolBar.getMyPane());
+        this.addEventFilter(ActionEvent.ACTION, paneHandler.paneClickHandler(paneClick));
     }
 
-    public void setOnActionEvent(MyPane pane, Cursor onAction, EventHandler<MouseEvent> paneClick) {
-        this.setOnAction(getOnActionHandler(pane, onAction, paneClick));
+    public void setToolBar(MyToolBar toolBar) {
+        this.toolBar = toolBar;
     }
 }

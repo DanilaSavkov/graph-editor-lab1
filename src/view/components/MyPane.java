@@ -1,15 +1,18 @@
 package view.components;
 
-import handlers.ToolBarHandler;
-import javafx.event.EventHandler;
+import handlers.VertexHandler;
+import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import model.Graph;
+import model.GraphicalEdge;
+import model.GraphicalVertex;
 import model.Vertex;
 
+import java.nio.file.attribute.GroupPrincipal;
+
 public class MyPane extends Pane {
-    private Graph graph;
+    private final Graph graph;
 
     public MyPane() {
         graph = new Graph();
@@ -19,10 +22,11 @@ public class MyPane extends Pane {
         return graph;
     }
 
-    public boolean already(double x, double y, double radius) {
+    // может куда-то переместить?
+    public boolean already(GraphicalVertex vertexToFind) {
         boolean result = false;
         for (Vertex vertex : graph.getVertices()) {
-            if ((Math.pow(x - vertex.getX(), 2) + Math.pow(y - vertex.getY(), 2)) <= Math.pow(3 * radius, 2)) {
+            if ((Math.pow(vertexToFind.getX() - vertex.getX(), 2) + Math.pow(vertexToFind.getY() - vertex.getY(), 2)) <= Math.pow(3 * GraphicalVertex.getRadius(), 2)) {
                 result = true;
                 break;
             }
@@ -30,8 +34,13 @@ public class MyPane extends Pane {
         return result;
     }
 
-    public void addVertex(double x, double y, double radius) {
-        graph.addVertex(x, y);
-        this.getChildren().add(new Circle(x, y, radius));
+    public void addVertex(GraphicalVertex vertex) {
+        graph.addVertex(vertex);
+        this.getChildren().add(vertex.getCircle());
     }
+
+//    public void addEdge(GraphicalEdge edge) {
+//        graph.addEdge(edge);
+//        this.getChildren().add(edge.getLine());
+//    }
 }
