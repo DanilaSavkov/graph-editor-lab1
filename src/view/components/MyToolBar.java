@@ -1,7 +1,5 @@
 package view.components;
 
-import handlers.EdgeHandler;
-import handlers.VertexHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
@@ -9,25 +7,18 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 
 public class MyToolBar extends ToolBar {
-    private final MyPane myPane;
+    private final Sheet sheet;
 
-    public MyToolBar(MyPane myPane) {
-        this.myPane = myPane;
+    public MyToolBar(Sheet sheet) {
+        this.sheet = sheet;
         double imageSide = 30;
 
         ImageView vertexImage = new MyImageView("https://pngimg.com/uploads/cursor/cursor_PNG11.png", imageSide);
-        ImageView edgeImage = new MyImageView("https://img.icons8.com/ios/452/long-arrow-right.png", imageSide);
 
         MyButton vertex = new MyButton(vertexImage);
-        VertexHandler vertexHandler = new VertexHandler(myPane);
-        MyButton edge = new MyButton(edgeImage);
-        EdgeHandler edgeHandler = new EdgeHandler(myPane);
 
-        this.addAll(vertex, new Separator(), edge);
+        this.addAll(vertex, new Separator());
         this.setOrientation(Orientation.VERTICAL);
-
-        vertex.setPaneClickEvent(vertexHandler.addVertex());
-        edge.setPaneClickEvent(edgeHandler.addEdge());
     }
 
     public void add(Node node) {
@@ -41,7 +32,7 @@ public class MyToolBar extends ToolBar {
         }
     }
 
-    public MyPane getMyPane() {
-        return myPane;
+    public Sheet getMyPane() {
+        return sheet;
     }
 }

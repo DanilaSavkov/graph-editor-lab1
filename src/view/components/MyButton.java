@@ -1,9 +1,6 @@
 package view.components;
 
 import handlers.ButtonHandler;
-import handlers.PaneHandler;
-import handlers.VertexHandler;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -23,8 +20,8 @@ public class MyButton extends Button {
     }
 
     public void setPaneClickEvent(EventHandler<MouseEvent> paneClick) {
-        PaneHandler paneHandler = new PaneHandler(this.toolBar.getMyPane());
-        this.addEventFilter(ActionEvent.ACTION, paneHandler.paneClickHandler(paneClick));
+//        SheetHandler sheetHandler = new SheetHandler(this.toolBar.getMyPane());
+//        this.addEventFilter(ActionEvent.ACTION, sheetHandler.sheetClickHandler(paneClick));
     }
 
     public void setToolBar(MyToolBar toolBar) {

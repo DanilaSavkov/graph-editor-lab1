@@ -1,6 +1,7 @@
 package view.components;
 
 import javafx.geometry.HPos;
+import javafx.scene.Parent;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 

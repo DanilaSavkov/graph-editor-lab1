@@ -12,11 +12,11 @@ public class Graph {
         vertices = new ArrayList<>();
     }
 
-    public boolean addVertex(Vertex vertex) {
+    public boolean add(Vertex vertex) {
         return vertices.add(vertex);
     }
 
-    public boolean addEdge(Edge edge) {
+    public boolean add(Edge edge) {
         return edges.add(edge);
     }
 

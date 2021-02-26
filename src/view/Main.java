@@ -1,5 +1,6 @@
 package view;
 
+import handlers.SheetHandler;
 import javafx.application.Application;
 
 import javafx.scene.control.*;
@@ -25,7 +26,7 @@ public class Main extends Application {
         startPane.setStyle("-fx-background-color: #E7E7DE;");
 
         // рабочая зона + панель инструментов
-        MyPane list = new MyPane();
+        Sheet list = new Sheet();
         list.setStyle("-fx-background-color: white;");
         ToolBar toolBar = new MyToolBar(list);
         toolBar.setStyle("");
