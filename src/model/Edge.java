@@ -1,25 +1,21 @@
 package model;
 
 public class Edge {
-    private Vertex beginVertex;
+    private Vertex startVertex;
     private Vertex endVertex;
     private int weight;
 
-    public Edge(Vertex beginVertex, Vertex endVertex) {
-        this.beginVertex = beginVertex;
+    public Edge(Vertex startVertex, Vertex endVertex) {
+        this.startVertex = startVertex;
         this.endVertex = endVertex;
     }
 
-    public Vertex[] getEnds() {
-        return new Vertex[]{beginVertex, endVertex};
+    public Vertex getStartVertex() {
+        return startVertex;
     }
 
-    public Vertex getBeginVertex() {
-        return beginVertex;
-    }
-
-    public void setBeginVertex(Vertex beginVertex) {
-        this.beginVertex = beginVertex;
+    public void setStartVertex(Vertex startVertex) {
+        this.startVertex = startVertex;
     }
 
     public Vertex getEndVertex() {
@@ -36,5 +32,9 @@ public class Edge {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public Vertex[] getEnds() {
+        return new Vertex[]{startVertex, endVertex};
     }
 }

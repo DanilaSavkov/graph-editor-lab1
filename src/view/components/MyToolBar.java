@@ -11,13 +11,10 @@ public class MyToolBar extends ToolBar {
 
     public MyToolBar(Sheet sheet) {
         this.sheet = sheet;
-        double imageSide = 30;
+        double imageSide = 50;
 
-        ImageView vertexImage = new MyImageView("https://pngimg.com/uploads/cursor/cursor_PNG11.png", imageSide);
-
-        MyButton vertex = new MyButton(vertexImage);
-
-        this.addAll(vertex, new Separator());
+        ImageView vertexImage = new MyImageView("https://pngimg.com/uploads/cursor/cursor_PNG78.png", imageSide);
+        this.addAll(new Separator());
         this.setOrientation(Orientation.VERTICAL);
     }
 

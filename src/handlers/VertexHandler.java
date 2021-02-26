@@ -5,7 +5,8 @@ import javafx.scene.input.MouseEvent;
 import model.GraphicalVertex;
 
 public class VertexHandler {
-    public static EventHandler<MouseEvent> vertexClickEvent(GraphicalVertex vertex) {
+    // обработчик событий нажатия на вершину
+    public static EventHandler<MouseEvent> mouseClick(GraphicalVertex vertex) {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -14,18 +15,23 @@ public class VertexHandler {
         };
     }
 
-    public static void selectVertex(GraphicalVertex vertex) {
-        vertex.setSelected();
+    private static void selectVertex(GraphicalVertex vertex) {
+        vertex.select();
     }
 
-    public static EventHandler<MouseEvent> moveVertex(GraphicalVertex vertex) {
+    // обработчик событий перетягивания вершины мышью
+    public static EventHandler<MouseEvent> vertexDragEvent(GraphicalVertex vertex) {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                vertex.setSelected();
-                vertex.setX(mouseEvent.getX());
-                vertex.setY(mouseEvent.getY());
+                moveVertex(vertex, mouseEvent);
             }
         };
+    }
+
+    private static void moveVertex(GraphicalVertex vertex, MouseEvent mouseEvent) {
+        vertex.select();
+        vertex.setX(mouseEvent.getX());
+        vertex.setY(mouseEvent.getY());
     }
 }

@@ -14,9 +14,8 @@ public class MyButton extends Button {
 
     public MyButton(ImageView imageView) {
         this.setGraphic(imageView);
-        ButtonHandler buttonHandler = new ButtonHandler(this);
-        this.addEventFilter(MouseEvent.MOUSE_ENTERED, buttonHandler.mouseEnteredEvent(enteredCursor, IMAGE_SCALE));
-        this.addEventFilter(MouseEvent.MOUSE_EXITED, buttonHandler.mouseEnteredEvent(Cursor.DEFAULT, 1));
+        this.addEventFilter(MouseEvent.MOUSE_ENTERED, ButtonHandler.mouseEnteredEvent(this ,enteredCursor, IMAGE_SCALE));
+        this.addEventFilter(MouseEvent.MOUSE_EXITED, ButtonHandler.mouseEnteredEvent(this, Cursor.DEFAULT, 1));
     }
 
     public void setPaneClickEvent(EventHandler<MouseEvent> paneClick) {

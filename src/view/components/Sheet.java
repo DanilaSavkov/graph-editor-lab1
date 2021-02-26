@@ -1,22 +1,23 @@
 package view.components;
 
 import handlers.SheetHandler;
-import handlers.VertexHandler;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import model.Graph;
 import model.GraphicalVertex;
 import model.Vertex;
 
+import java.util.ArrayList;
+import java.util.List;
+
+// идентификатор работает неправильно: установка идет на последню
+// добавленную из выбранных вершин.
 public class Sheet extends Pane {
     private final Graph graph;
 
     public Sheet() {
         graph = new Graph();
-        this.addEventFilter(MouseEvent.MOUSE_CLICKED, SheetHandler.clickEvent(this));
-        this.setOnKeyPressed(SheetHandler.keyEvent(this));
+        this.addEventFilter(MouseEvent.MOUSE_CLICKED, SheetHandler.mouseClick(this));
     }
 
     public Graph getGraph() {
@@ -34,14 +35,24 @@ public class Sheet extends Pane {
         return result;
     }
 
-    public void addVertex(GraphicalVertex vertex) {
-        if (graph.add(vertex))
-            this.getChildren().add(vertex.getCircle());
+    public void add(GraphicalVertex vertex) {
+        if (graph.add(vertex)) {
+            this.getChildren().addAll(vertex.getCircle(), vertex.getText());
+        }
     }
 
-    public void removeVertex(GraphicalVertex vertex) {
-        if (graph.remove(vertex))
-            this.getChildren().remove(vertex.getCircle());
+    public void remove(GraphicalVertex vertex) {
+        if (graph.remove(vertex)) {
+            this.getChildren().removeAll(vertex.getCircle(), vertex.getText());
+        }
     }
 
+    public List<GraphicalVertex> getSelectedVertices() {
+        List<GraphicalVertex> vertices = new ArrayList<>();
+        for (Vertex vertex : graph.getVertices()) {
+            GraphicalVertex temp = (GraphicalVertex) vertex;
+            if (temp.isSelected()) vertices.add(temp);
+        }
+        return vertices;
+    }
 }

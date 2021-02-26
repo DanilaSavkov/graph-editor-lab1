@@ -6,14 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 
 public class ButtonHandler {
-    private Button button;
-
-    public ButtonHandler(Button button) {
-        this.button = button;
-    }
-
-    // наведение мыши на кнопку
-    public EventHandler<MouseEvent> mouseEnteredEvent(Cursor cursor, double scale) {
+    public static EventHandler<MouseEvent> mouseEnteredEvent(Button button, Cursor cursor, double scale) {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {

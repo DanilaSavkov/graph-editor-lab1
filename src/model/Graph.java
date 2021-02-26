@@ -12,6 +12,14 @@ public class Graph {
         vertices = new ArrayList<>();
     }
 
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public List<Vertex> getVertices() {
+        return vertices;
+    }
+
     public boolean add(Vertex vertex) {
         return vertices.add(vertex);
     }
@@ -22,7 +30,7 @@ public class Graph {
 
     public boolean remove(Vertex vertex) {
         if (vertices.contains(vertex)) {
-            for (Edge edge: findEdgesByVertex(vertex)) {
+            for (Edge edge: edgesFromVertex(vertex)) {
                 remove(edge);
             }
             vertices.remove(vertex);
@@ -35,7 +43,7 @@ public class Graph {
         return edges.remove(edge);
     }
 
-    public List<Edge> findEdgesByVertex(Vertex vertex) {
+    public List<Edge> edgesFromVertex(Vertex vertex) {
         List<Edge> result = new ArrayList<>();
         for (Edge edge: edges) {
             if (edge.getEnds()[0] == vertex || edge.getEnds()[1] == vertex) {
@@ -43,13 +51,5 @@ public class Graph {
             }
         }
         return result;
-    }
-
-    public List<Edge> getEdges() {
-        return edges;
-    }
-
-    public List<Vertex> getVertices() {
-        return vertices;
     }
 }
