@@ -3,56 +3,63 @@ package view.components;
 import handlers.SheetHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import model.Graph;
-import model.GraphicalVertex;
-import model.Vertex;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// идентификатор работает неправильно: установка идет на последню
-// добавленную из выбранных вершин.
 public class Sheet extends Pane {
-    private final Graph graph;
+    private final WeightedGraph<GraphicalVertex> weightedGraph;
+    List<GraphicalVertex> selectedVertices;
 
     public Sheet() {
-        graph = new Graph();
-        this.addEventFilter(MouseEvent.MOUSE_CLICKED, SheetHandler.mouseClick(this));
+        weightedGraph = new WeightedGraph<>(true);
+        selectedVertices = new ArrayList<>();
+        setVertexToolProperties();
     }
 
-    public Graph getGraph() {
-        return graph;
+    public List<GraphicalVertex> getSelectedVertices() {
+        return selectedVertices;
+    }
+
+    public void add(GraphicalVertex vertex) {
+        weightedGraph.add(vertex);
+        this.getChildren().addAll(vertex.getCircle(), vertex.getText());
+    }
+
+    public void remove(GraphicalVertex vertex) {
+        weightedGraph.remove(vertex);
+        this.getChildren().removeAll(vertex.getCircle(), vertex.getText());
     }
 
     public boolean contains(GraphicalVertex requiredVertex) {
-        boolean result = false;
-        for (Vertex vertex : graph.getVertices()) {
+        return find(requiredVertex) != null;
+    }
+
+    public GraphicalVertex find(GraphicalVertex requiredVertex) {
+        GraphicalVertex result = null;
+        for (Vertex vertex : weightedGraph.getVertices()) {
             if ((Math.pow(requiredVertex.getX() - vertex.getX(), 2) + Math.pow(requiredVertex.getY() - vertex.getY(), 2)) <= Math.pow(GraphicalVertex.getRadius(), 2)) {
-                result = true;
+                result = (GraphicalVertex) vertex;
                 break;
             }
         }
         return result;
     }
 
-    public void add(GraphicalVertex vertex) {
-        if (graph.add(vertex)) {
-            this.getChildren().addAll(vertex.getCircle(), vertex.getText());
+    public void select(GraphicalVertex vertex) {
+        vertex.select();
+        selectedVertices.add(vertex);
+    }
+
+    public void unselectAll() {
+        selectedVertices = new ArrayList<>();
+        for (Vertex vertex : weightedGraph.getVertices()) {
+            ((GraphicalVertex) vertex).unselect();
         }
     }
 
-    public void remove(GraphicalVertex vertex) {
-        if (graph.remove(vertex)) {
-            this.getChildren().removeAll(vertex.getCircle(), vertex.getText());
-        }
-    }
-
-    public List<GraphicalVertex> getSelectedVertices() {
-        List<GraphicalVertex> vertices = new ArrayList<>();
-        for (Vertex vertex : graph.getVertices()) {
-            GraphicalVertex temp = (GraphicalVertex) vertex;
-            if (temp.isSelected()) vertices.add(temp);
-        }
-        return vertices;
+    public void setVertexToolProperties() {
+        this.addEventFilter(MouseEvent.MOUSE_CLICKED, SheetHandler.mouseClick(this));
     }
 }

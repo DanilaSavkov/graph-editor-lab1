@@ -2,6 +2,8 @@ package handlers;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Line;
+import model.GraphicalEdge;
 import model.GraphicalVertex;
 
 public class VertexHandler {

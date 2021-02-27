@@ -3,7 +3,7 @@ package model;
 public class Vertex {
     private double x;
     private double y;
-    private String id;
+    private String identifier;
 
     public Vertex(double x, double y) {
         this.x = x;
@@ -26,11 +26,11 @@ public class Vertex {
         this.y = y;
     }
 
-    public String getId() {
-        return id;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 }

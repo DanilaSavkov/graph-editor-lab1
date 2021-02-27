@@ -1,8 +1,10 @@
 package view;
 
+import handlers.ButtonHandler;
 import handlers.SheetHandler;
 import javafx.application.Application;
 
+import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
@@ -16,15 +18,14 @@ public class Main extends Application {
     public void start(Stage stage) {
         // панель меню
         MenuBar menuBar = new MenuBar();
-        MenuItem newButton = new MenuItem("New");
-        MenuItem openButton = new MenuItem("Open");
-        MenuItem saveButton = new MenuItem("Save");
-        MenuItem saveAsButton = new MenuItem("Save as...");
-        MenuItem handButton = new MenuItem("Hand");
-        MenuItem vertexButton = new MenuItem("Vertex");
-        MenuItem edgeButton = new MenuItem("Edge");
-        Menu fileMenu = new Menu("File", null, newButton, openButton, new SeparatorMenuItem(), saveButton, saveAsButton);
-        Menu toolsMenu = new Menu("Tools", null, handButton, vertexButton, edgeButton);
+        MenuItem newMenuItem = new MenuItem("New");
+        MenuItem openMenuItem = new MenuItem("Open");
+        MenuItem saveMenuItem = new MenuItem("Save");
+        MenuItem saveAsMenuItem = new MenuItem("Save as...");
+        MenuItem vertexMenuItem = new MenuItem("Vertex");
+        MenuItem edgeMenuItem = new MenuItem("Edge");
+        Menu fileMenu = new Menu("File", null, newMenuItem, openMenuItem, new SeparatorMenuItem(), saveMenuItem, saveAsMenuItem);
+        Menu toolsMenu = new Menu("Tools", null, vertexMenuItem, edgeMenuItem);
         menuBar.getMenus().addAll(fileMenu, toolsMenu);
         menuBar.setStyle("");
 
@@ -37,12 +38,13 @@ public class Main extends Application {
 
         // рабочая зона + панель инструментов
         Sheet sheet = new Sheet();
-        ToolBar toolBar = new MyToolBar(sheet);
-        toolBar.setStyle("");
-        GridPane taskPane = MyAppWorkingWindow.generate(toolBar, sheet);
+        Button vertexButton = new Button("vertex");
+        ToolBar toolBar = new ToolBar(vertexButton, new Separator());
+        toolBar.setOrientation(Orientation.VERTICAL);
+        MainWindow mainWindow = new MainWindow(toolBar, sheet);
 
         // корень и сцена
-        GridPane root = MyAppRoot.generate(menuBar, taskPane);
+        GridPane root = MyAppRoot.generate(menuBar, mainWindow);
         Scene scene = new Scene(root, 800, 450);
 
         stage.setScene(scene);

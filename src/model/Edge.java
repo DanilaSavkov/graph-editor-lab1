@@ -3,7 +3,7 @@ package model;
 public class Edge {
     private Vertex startVertex;
     private Vertex endVertex;
-    private int weight;
+    private String weight;
 
     public Edge(Vertex startVertex, Vertex endVertex) {
         this.startVertex = startVertex;
@@ -26,15 +26,11 @@ public class Edge {
         this.endVertex = endVertex;
     }
 
-    public int getWeight() {
+    public String getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(String weight) {
         this.weight = weight;
-    }
-
-    public Vertex[] getEnds() {
-        return new Vertex[]{startVertex, endVertex};
     }
 }

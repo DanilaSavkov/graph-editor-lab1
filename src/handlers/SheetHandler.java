@@ -6,7 +6,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import model.GraphicalVertex;
-import model.Vertex;
 import view.components.Sheet;
 
 import java.util.List;
@@ -31,9 +30,7 @@ public class SheetHandler {
     }
 
     private static void unselectAllVertices(Sheet sheet) {
-        for (Vertex vertex : sheet.getGraph().getVertices()) {
-            ((GraphicalVertex) vertex).unselect();
-        }
+        sheet.unselectAll();
     }
 
     private static boolean doubleClick(MouseEvent mouseEvent) {
@@ -54,7 +51,14 @@ public class SheetHandler {
     }
 
     private static boolean vertexClicked(Sheet sheet, MouseEvent mouseEvent) {
-        return sheet.contains(new GraphicalVertex(mouseEvent.getX(), mouseEvent.getY()));
+        GraphicalVertex vertex = new GraphicalVertex(mouseEvent.getX(), mouseEvent.getY());
+        if (sheet.contains(vertex)) {
+            sheet.select(sheet.find(vertex));
+            return true;
+        } else {
+            sheet.unselectAll();
+            return false;
+        }
     }
 
     // обработчик событий нажатий клавиш на клавиатуре
@@ -85,15 +89,17 @@ public class SheetHandler {
         GraphicalVertex vertex = null;
         if (!selectedVertices.isEmpty()) vertex = selectedVertices.get(selectedVertices.size() - 1);
         if (vertex != null) {
-            String id = getUserIdentifier();
+            unselectAllVertices(sheet);
+            sheet.select(vertex);
+            String id = getUserIdentifier(vertex);
             if (id != null) {
-                vertex.setId(id);
+                vertex.setIdentifier(id);
             }
         }
     }
 
-    private static String getUserIdentifier() {
-        TextInputDialog dialog = new TextInputDialog(null);
+    private static String getUserIdentifier(GraphicalVertex vertex) {
+        TextInputDialog dialog = new TextInputDialog(vertex.getIdentifier());
         dialog.setTitle("Change identifier");
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
