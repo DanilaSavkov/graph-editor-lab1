@@ -1,15 +1,14 @@
 package view.components;
 
-import handlers.SheetHandler;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import model.Graphical;
 import model.Selectable;
 import model.edges.GraphicalEdge;
 import model.graphs.Graph;
 import model.vertecies.GraphicalVertex;
-import model.vertecies.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +17,45 @@ public class Sheet extends Pane {
     private final Graph<GraphicalVertex, GraphicalEdge> graph;
     private List<Selectable> selected;
 
+    /*
+     *      constructors
+     */
+
     public Sheet() {
         graph = new Graph<>();
         selected = new ArrayList<>();
-        this.setOnMouseClicked(mouseClickedHandler());
+        setHandlers(mouseClickedHandler());
     }
+
+    /*
+     *      getter's and setter's
+     */
 
     public List<Selectable> getSelected() {
         return selected;
     }
+
+    public List<GraphicalVertex> getSelectedVertices() {
+        ArrayList<GraphicalVertex> vertices = new ArrayList<>();
+        for (Selectable item : selected) {
+            if (item instanceof GraphicalVertex) {
+                vertices.add((GraphicalVertex) item);
+            }
+        }
+        return vertices;
+    }
+
+    public Graph<GraphicalVertex, GraphicalEdge> getGraph() {
+        return graph;
+    }
+
+    public void setHandlers(EventHandler<MouseEvent> mouseClickedHandler) {
+        setOnMouseClicked(mouseClickedHandler);
+    }
+
+    /*
+     *      methods
+     */
 
     public void add(GraphicalVertex vertex) {
         graph.add(vertex);
@@ -47,10 +76,33 @@ public class Sheet extends Pane {
         graph.remove(edge);
         this.getChildren().removeAll(edge.getGraphics());
     }
+    
+    public boolean contains(double x, double y) {
+        return find(x, y) != null;
+    }
+
+    public Graphical find(double x, double y) {
+        List<Graphical> graphItems = new ArrayList<>(graph.getEdges());
+        graphItems.addAll(graph.getVertices());
+        for (Graphical item : graphItems) {
+            if (item.getShape().contains(x, y)) return item;
+        }
+        return null;
+    }
 
     public void select(Selectable item) {
-        item.setSelected();
-        selected.add(item);
+        if (!selected.contains(item)) {
+            selected.add(item);
+            item.setSelected();
+        }
+    }
+
+    public void selectAll() {
+        List<Selectable> graphItems = new ArrayList<>(graph.getEdges());
+        graphItems.addAll(graph.getVertices());
+        for (Selectable item : graphItems) {
+            select(item);
+        }
     }
 
     public void unselectAll() {
@@ -60,42 +112,22 @@ public class Sheet extends Pane {
         selected = new ArrayList<>();
     }
 
-
-    public boolean contains(GraphicalVertex requiredVertex) {
-        return find(requiredVertex) != null;
-    }
-
-    public GraphicalVertex find(GraphicalVertex requiredVertex) {
-        GraphicalVertex result = null;
-        for (GraphicalVertex vertex : graph.getVertices()) {
-            if ((Math.pow(requiredVertex.getCircle().getCenterX() - vertex.getCircle().getCenterX(), 2)
-                    + Math.pow(requiredVertex.getCircle().getCenterY() - vertex.getCircle().getCenterY(), 2))
-                    <= Math.pow(GraphicalVertex.getCircleRadius(), 2)) {
-                result = (GraphicalVertex) vertex;
-                break;
-            }
-        }
-        return result;
-    }
-
     /*
      *      handlers
      */
 
-    private EventHandler<MouseEvent> mouseClickedHandler() {
+    public EventHandler<MouseEvent> mouseClickedHandler() {
         return new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    GraphicalVertex vertex = new GraphicalVertex(mouseEvent.getX(), mouseEvent.getY());
-                    if (contains(vertex)) {
-                        select(find(vertex));
-                    } else unselectAll();
-                    if (mouseEvent.getClickCount() == 2) {
-                        if (!contains(vertex)) {
-                            add(vertex);
-                        }
-                    }
+
+                    if (contains(mouseEvent.getX(), mouseEvent.getY()))
+                        select(find(mouseEvent.getX(), mouseEvent.getY()));
+                    else unselectAll();
+
+                    if (mouseEvent.getClickCount() == 2 && !contains(mouseEvent.getX(), mouseEvent.getY()))
+                        add(new GraphicalVertex(mouseEvent.getX(), mouseEvent.getY()));
                 }
             }
         };

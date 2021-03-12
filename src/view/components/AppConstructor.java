@@ -12,7 +12,7 @@ public class AppConstructor {
 
     public AppConstructor() {
         menuBar = new MenuBarConstructor().getMenuBar();
-        toolBar = new ToolBarConstructor().getToolBar();
+        toolBar = new ToolBarConstructor(sheet).getToolBar();
         sheet = new Sheet();
     }
 }

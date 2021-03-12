@@ -11,8 +11,8 @@ public class TaskPaneConstructor {
     private final Sheet sheet;
 
     public TaskPaneConstructor() {
-        toolBar = new ToolBarConstructor().getToolBar();
         sheet = new Sheet();
+        toolBar = new ToolBarConstructor(sheet).getToolBar();
         taskPane = new GridPane();
         configureGridPane();
     }
