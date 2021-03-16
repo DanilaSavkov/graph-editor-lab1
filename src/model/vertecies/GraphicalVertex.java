@@ -3,12 +3,10 @@ package model.vertecies;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
-import model.Graphical;
+import model.interfaces.Graphical;
 
 public class GraphicalVertex extends Vertex implements Graphical {
     private final Circle circle;
@@ -36,10 +34,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
     /*
      *      getter's and setter's
      */
-
-    public static double getCircleRadius() {
-        return CIRCLE_RADIUS;
-    }
 
     @Override
     public Circle getShape() {
@@ -96,8 +90,10 @@ public class GraphicalVertex extends Vertex implements Graphical {
         text.setText(identifier);
     }
 
-    public void setCircleHandlers(EventHandler<MouseEvent> mouseClickedHandler, EventHandler<MouseEvent> mouseDraggedHandler,
-                                  EventHandler<MouseEvent> mouseEnteredHandler, EventHandler<MouseEvent> mouseExitedHandler) {
+    public void setCircleHandlers(EventHandler<MouseEvent> mouseClickedHandler,
+                                  EventHandler<MouseEvent> mouseDraggedHandler,
+                                  EventHandler<MouseEvent> mouseEnteredHandler,
+                                  EventHandler<MouseEvent> mouseExitedHandler) {
         circle.setOnMouseClicked(mouseClickedHandler);
         circle.setOnMouseDragged(mouseDraggedHandler);
         circle.setOnMouseEntered(mouseEnteredHandler);
@@ -109,11 +105,11 @@ public class GraphicalVertex extends Vertex implements Graphical {
      */
 
     private void configureCircle() {
-        circle.setFill(CIRCLE_FILL);
+        circle.setFill(DEFAULT_FILL);
         circle.setOpacity(CIRCLE_FILL_OPACITY);
 
         circle.setStroke(DEFAULT_COLOR);
-        circle.setStrokeWidth(CIRCLE_STROKE_WIDTH);
+        circle.setStrokeWidth(STROKE_WIDTH);
         circle.setStrokeType(CIRCLE_STROKE_TYPE);
 
         setCircleHandlers(mouseClickedHandler(), mouseDraggedHandler(), mouseEnteredHandler(), mouseExitedHandler());
@@ -149,7 +145,9 @@ public class GraphicalVertex extends Vertex implements Graphical {
             public void handle(MouseEvent mouseEvent) {
                 setSelected();
                 circle.setCenterX(mouseEvent.getX());
+                setX(mouseEvent.getX());
                 circle.setCenterY(mouseEvent.getY());
+                setY(mouseEvent.getY());
             }
         };
     }
@@ -171,17 +169,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
             public void handle(MouseEvent mouseEvent) {
                 setUnfocused();
                 if (selected) {
-                    setSelected();
-                }
-            }
-        };
-    }
-
-    public EventHandler<MouseEvent> edgeHandler(int count) {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                     setSelected();
                 }
             }

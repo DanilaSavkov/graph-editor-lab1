@@ -1,11 +1,12 @@
 package model.edges;
 
+import model.interfaces.Identified;
 import model.vertecies.Vertex;
 
-public class Edge {
+public class Edge implements Identified {
     private Vertex source;
     private Vertex destination;
-    private int weight;
+    private String identifier;
 
     /*
      *      constructors
@@ -14,11 +15,6 @@ public class Edge {
     public Edge(Vertex source, Vertex destination) {
         this.source = source;
         this.destination = destination;
-    }
-
-    public Edge(Edge edge) {
-        this.source = edge.getSource();
-        this.destination = edge.getDestination();
     }
 
     /*
@@ -41,11 +37,21 @@ public class Edge {
         this.destination = destination;
     }
 
-    public int getWeight() {
-        return weight;
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
+    @Override
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /*
+     *      main method's
+     */
+
+    public boolean contains(Vertex vertex) {
+        return source.equals(vertex) || destination.equals(vertex);
     }
 }

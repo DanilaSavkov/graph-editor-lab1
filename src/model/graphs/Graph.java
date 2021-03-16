@@ -14,7 +14,8 @@ public class Graph<V extends Vertex, E extends Edge> {
      *      constructors
      */
 
-    public Graph() {
+    public Graph(String name) {
+        this.name = name;
         this.vertices = new ArrayList<>();
         this.edges = new ArrayList<>();
     }
@@ -39,6 +40,14 @@ public class Graph<V extends Vertex, E extends Edge> {
         return edges;
     }
 
+    public int getVerticesCount() {
+        return vertices.size();
+    }
+
+    public int getEdgesCount() {
+        return edges.size();
+    }
+
     /*
      *      other methods
      */
@@ -55,11 +64,6 @@ public class Graph<V extends Vertex, E extends Edge> {
 
     public void remove(V vertex) {
         vertices.remove(vertex);
-        for (E edge: edges) {
-            if (edge.getSource().equals(vertex) || edge.getDestination().equals(vertex)) {
-                remove(edge);
-            }
-        }
     }
 
     public void remove(E edge) {

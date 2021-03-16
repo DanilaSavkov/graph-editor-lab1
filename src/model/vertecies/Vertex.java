@@ -1,6 +1,8 @@
 package model.vertecies;
 
-public class Vertex {
+import model.interfaces.Identified;
+
+public class Vertex implements Identified {
     private double x;
     private double y;
     private String identifier;
@@ -34,10 +36,12 @@ public class Vertex {
         this.y = y;
     }
 
+    @Override
     public String getIdentifier() {
         return identifier;
     }
 
+    @Override
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }

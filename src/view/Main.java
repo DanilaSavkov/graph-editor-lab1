@@ -2,6 +2,7 @@ package view;
 
 import javafx.application.Application;
 
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import view.components.*;
@@ -9,13 +10,13 @@ import view.components.*;
 public class Main extends Application {
     @Override
     public void start(Stage stage) {
-        RootConstructor root = new RootConstructor();
-        Scene scene = new Scene(root.getGridPane(), 1000, 600);
+//        Scene scene = new Scene(root.getGridPane(), 1000, 600);
+        AppConstructor constructor = new AppConstructor();
 
-        stage.setScene(scene);
+        stage.setScene(constructor.getScene());
         stage.setResizable(true);
         stage.setTitle("KBE Premium");
-//        stage.addEventFilter(KeyEvent.KEY_RELEASED, SheetHandler.keyReleased(sheet));
+//        stage.addEventFilter(KeyEvent.KEY_RELEASED, root.getSheet().keyReleasedHandler());
         stage.show();
     }
 

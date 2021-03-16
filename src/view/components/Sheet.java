@@ -1,17 +1,22 @@
 package view.components;
 
 import javafx.event.EventHandler;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import model.Graphical;
-import model.Selectable;
+import model.interfaces.Graphical;
+import model.interfaces.Selectable;
+import model.interfaces.Textual;
 import model.edges.GraphicalEdge;
 import model.graphs.Graph;
 import model.vertecies.GraphicalVertex;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class Sheet extends Pane {
     private final Graph<GraphicalVertex, GraphicalEdge> graph;
@@ -21,10 +26,10 @@ public class Sheet extends Pane {
      *      constructors
      */
 
-    public Sheet() {
-        graph = new Graph<>();
+    public Sheet(String name) {
+        graph = new Graph<>(name);
         selected = new ArrayList<>();
-        setHandlers(mouseClickedHandler());
+        setHandlers(null);
     }
 
     /*
@@ -45,6 +50,16 @@ public class Sheet extends Pane {
         return vertices;
     }
 
+    public List<GraphicalEdge> getSelectedEdges() {
+        ArrayList<GraphicalEdge> edges = new ArrayList<>();
+        for (Selectable item : selected) {
+            if (item instanceof GraphicalEdge) {
+                edges.add((GraphicalEdge) item);
+            }
+        }
+        return edges;
+    }
+
     public Graph<GraphicalVertex, GraphicalEdge> getGraph() {
         return graph;
     }
@@ -54,7 +69,7 @@ public class Sheet extends Pane {
     }
 
     /*
-     *      methods
+     *      main methods
      */
 
     public void add(GraphicalVertex vertex) {
@@ -68,15 +83,25 @@ public class Sheet extends Pane {
     }
 
     public void remove(GraphicalVertex vertex) {
+        Iterator<GraphicalEdge> iterator = graph.getEdges().iterator();
+        while (iterator.hasNext()) {
+            GraphicalEdge edge = iterator.next();
+            if (edge.contains(vertex)) {
+                iterator.remove();
+                remove(edge);
+            }
+        }
+        unselect(vertex);
         graph.remove(vertex);
-        this.getChildren().removeAll(vertex.getGraphics());
+        removeGraphics(vertex);
     }
 
     public void remove(GraphicalEdge edge) {
+        unselect(edge);
         graph.remove(edge);
-        this.getChildren().removeAll(edge.getGraphics());
+        removeGraphics(edge);
     }
-    
+
     public boolean contains(double x, double y) {
         return find(x, y) != null;
     }
@@ -105,11 +130,48 @@ public class Sheet extends Pane {
         }
     }
 
+    public void unselect(Selectable item) {
+        selected.remove(item);
+        item.setUnselected();
+    }
+
     public void unselectAll() {
         for (Selectable item : selected) {
             item.setUnselected();
         }
         selected = new ArrayList<>();
+    }
+
+    /*
+     *      other method's
+     */
+
+    private void removeGraphics(Graphical item) {
+        this.getChildren().removeAll(item.getGraphics());
+    }
+
+    private void removeSelected() {
+        for (GraphicalEdge edge : getSelectedEdges()) remove(edge);
+        for (GraphicalVertex vertex : getSelectedVertices()) remove(vertex);
+    }
+
+    private void setLastSelectedId() {
+        if (!selected.isEmpty()) {
+            Selectable item = selected.get(selected.size() - 1);
+            unselectAll();
+            select(item);
+            ((Textual) item).setIdentifier(getUserIdentifier((Textual) item));
+        }
+    }
+
+    private static String getUserIdentifier(Textual item) {
+        TextInputDialog dialog = new TextInputDialog(item.getText().getText());
+        dialog.setTitle("Change identifier");
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
+        dialog.setContentText("New identifier:");
+        Optional<String> result = dialog.showAndWait();
+        return result.orElse(null);
     }
 
     /*
@@ -121,13 +183,31 @@ public class Sheet extends Pane {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-
                     if (contains(mouseEvent.getX(), mouseEvent.getY()))
                         select(find(mouseEvent.getX(), mouseEvent.getY()));
                     else unselectAll();
 
                     if (mouseEvent.getClickCount() == 2 && !contains(mouseEvent.getX(), mouseEvent.getY()))
                         add(new GraphicalVertex(mouseEvent.getX(), mouseEvent.getY()));
+                }
+            }
+        };
+    }
+
+    public EventHandler<KeyEvent> keyReleasedHandler() {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                switch (keyEvent.getCode()) {
+                    case DELETE:
+                        removeSelected();
+                        break;
+                    case I:
+                        setLastSelectedId();
+                        break;
+                    case A:
+                        if (keyEvent.isControlDown()) selectAll();
+                        break;
                 }
             }
         };

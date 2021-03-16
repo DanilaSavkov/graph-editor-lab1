@@ -4,12 +4,10 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
-import model.Graphical;
+import model.interfaces.Graphical;
 import model.vertecies.GraphicalVertex;
 
 public class GraphicalEdge extends Edge implements Graphical {
@@ -103,25 +101,79 @@ public class GraphicalEdge extends Edge implements Graphical {
         return (GraphicalVertex) super.getDestination();
     }
 
+    @Override
+    public void setIdentifier(String identifier) {
+        super.setIdentifier(identifier);
+        text.setText(identifier);
+    }
+
+    public void setLineHandlers(EventHandler<MouseEvent> mouseClickedHandler,
+                                EventHandler<MouseEvent> mouseEnteredHandler,
+                                EventHandler<MouseEvent> mouseExitedHandler) {
+        line.setOnMouseClicked(mouseClickedHandler);
+        line.setOnMouseEntered(mouseEnteredHandler);
+        line.setOnMouseExited(mouseExitedHandler);
+    }
+
+    /*
+     *      methods
+     */
+
+    private double getXLength(double x1, double x2, double y1, double y2) {
+        return getYLength(x1, x2, y1, y2) * (Math.abs(x2 - x1) / Math.abs(y2 - y1));
+    }
+
+    private double getYLength(double x1, double x2, double y1, double y2) {
+        return Math.sqrt((Math.pow(CIRCLE_RADIUS + LINE_OFFSET, 2)) / (Math.pow((x2 - x1) / (y2 - y1), 2) + 1));
+    }
+
+    private void updateLineAngle() {
+        double sourceX = getSource().getShape().getCenterX();
+        double sourceY = getSource().getShape().getCenterY();
+        double destinationX = getDestination().getShape().getCenterX();
+        double destinationY = getDestination().getShape().getCenterY();
+
+        double deltaX = getXLength(sourceX, destinationX, sourceY, destinationY);
+        double deltaY = getYLength(sourceX, destinationX, sourceY, destinationY);
+        double deltaXSign = (destinationX - sourceX) / Math.abs(destinationX - sourceX);
+        double deltaYSign = (destinationY - sourceY) / Math.abs(destinationY - sourceY);
+
+        line.startXProperty().bind(frame.startXProperty().add(deltaXSign * deltaX));
+        line.startYProperty().bind(frame.startYProperty().add(deltaYSign * deltaY));
+        line.endXProperty().bind(frame.endXProperty().add(-deltaXSign * deltaX));
+        line.endYProperty().bind(frame.endYProperty().add(-deltaYSign * deltaY));
+    }
+
+    private void updateTextLocation() {
+        double sourceX = getSource().getShape().getCenterX();
+        double sourceY = getSource().getShape().getCenterY();
+        double destinationX = getDestination().getShape().getCenterX();
+        double destinationY = getDestination().getShape().getCenterY();
+
+        double deltaXSign = (destinationX - sourceX) / Math.abs(destinationX - sourceX);
+        double deltaYSign = (destinationY - sourceY) / Math.abs(destinationY - sourceY);
+
+        text.xProperty().bind(frame.startXProperty().add(deltaXSign * Math.abs(frame.getStartX() - frame.getEndX()) / 2));
+        text.yProperty().bind(frame.startYProperty().add(deltaYSign * Math.abs(frame.getStartY() - frame.getEndY()) / 2));
+    }
+
     /*
      *      configurations
      */
 
     private void configureLine() {
-        line.setFill(DEFAULT_COLOR);
+        line.setFill(DEFAULT_FILL);
         line.setStroke(DEFAULT_COLOR);
-        line.setStrokeWidth(LINE_STROKE_WIDTH);
+        line.setStrokeWidth(STROKE_WIDTH);
         line.setStrokeType(LINE_STROKE_TYPE);
 
-        listen();
-        getSource().getShape().centerXProperty().addListener(event -> listen());
-        getSource().getShape().centerYProperty().addListener(event -> listen());
-        getDestination().getShape().centerXProperty().addListener(event -> listen());
-        getDestination().getShape().centerYProperty().addListener(event -> listen());
+        updateLineAngle();
+        getSource().getShape().centerXProperty().addListener(event -> updateLineAngle());
+        getSource().getShape().centerYProperty().addListener(event -> updateLineAngle());
+        getDestination().getShape().centerXProperty().addListener(event -> updateLineAngle());
+        getDestination().getShape().centerYProperty().addListener(event -> updateLineAngle());
 
-        line.setOnMouseClicked(mouseClickedHandler());
-        line.setOnMouseEntered(mouseEnteredHandler());
-        line.setOnMouseExited(mouseExitedHandler());
+        setLineHandlers(mouseClickedHandler(), mouseEnteredHandler(), mouseExitedHandler());
     }
 
     private void configureFrame() {
@@ -139,34 +191,13 @@ public class GraphicalEdge extends Edge implements Graphical {
         text.setFill(TEXT_FILL);
         text.setText("");
 
-        text.xProperty().bind(line.startXProperty().add(15));
-        text.yProperty().bind(line.startYProperty().add(15));
+        updateTextLocation();
+        getSource().getShape().centerXProperty().addListener(event -> updateTextLocation());
+        getSource().getShape().centerYProperty().addListener(event -> updateTextLocation());
+        getDestination().getShape().centerXProperty().addListener(event -> updateTextLocation());
+        getDestination().getShape().centerYProperty().addListener(event -> updateTextLocation());
     }
 
-    private void listen() {
-        double sourceX = getSource().getShape().getCenterX();
-        double sourceY = getSource().getShape().getCenterY();
-        double destinationX = getDestination().getShape().getCenterX();
-        double destinationY = getDestination().getShape().getCenterY();
-
-        double deltaX = getDeltaX(sourceX, destinationX, sourceY, destinationY);
-        double deltaY = getDeltaY(sourceX, destinationX, sourceY, destinationY);
-        double deltaXSign = (destinationX - sourceX) / Math.abs(destinationX - sourceX);
-        double deltaYSign = (destinationY - sourceY) / Math.abs(destinationY - sourceY);
-
-        line.startXProperty().bind(frame.startXProperty().add(deltaXSign * deltaX));
-        line.startYProperty().bind(frame.startYProperty().add(deltaYSign * deltaY));
-        line.endXProperty().bind(frame.endXProperty().add(-deltaXSign * deltaX));
-        line.endYProperty().bind(frame.endYProperty().add(-deltaYSign * deltaY));
-    }
-
-    private double getDeltaX(double x1, double x2, double y1, double y2) {
-        return getDeltaY(x1, x2, y1, y2) * (Math.abs(x2 - x1) / Math.abs(y2 - y1));
-    }
-
-    private double getDeltaY(double x1, double x2, double y1, double y2) {
-        return Math.sqrt((Math.pow(CIRCLE_RADIUS + 1, 2)) / (Math.pow((x2 - x1) / (y2 - y1), 2) + 1));
-    }
 
     /*
      *      handlers

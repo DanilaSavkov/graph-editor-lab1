@@ -1,19 +1,15 @@
 package view.components;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
-import model.Selectable;
 import model.edges.GraphicalEdge;
 import model.vertecies.GraphicalVertex;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ToolBarConstructor {
@@ -21,7 +17,7 @@ public class ToolBarConstructor {
     private static final Cursor ENTERED_CURSOR = Cursor.HAND;
 
     private final ToolBar toolBar;
-    private final Sheet sheet;
+    private Sheet sheet;
 
     private final Button vertex;
     private final Button edge;
@@ -33,9 +29,7 @@ public class ToolBarConstructor {
     public ToolBarConstructor(Sheet sheet) {
         this.sheet = sheet;
         vertex = new Button();
-        configureVertexButton();
         edge = new Button();
-        configureEdgeButton();
         toolBar = new ToolBar(vertex, new Separator(), edge);
         configureToolBar();
     }
@@ -44,12 +38,12 @@ public class ToolBarConstructor {
      *      getter's and setter's
      */
 
-    public ToolBar getToolBar() {
-        return toolBar;
+    public void setSheet(Sheet sheet) {
+        this.sheet = sheet;
     }
 
-    public Button[] getButtons() {
-        return new Button[]{vertex, edge};
+    public ToolBar getToolBar() {
+        return toolBar;
     }
 
     /*
@@ -77,12 +71,17 @@ public class ToolBarConstructor {
             for (GraphicalVertex vertex : sheet.getGraph().getVertices()) {
                 vertex.setCircleHandlers(null, null, vertex.mouseEnteredHandler(), vertex.mouseExitedHandler());
             }
+            for (GraphicalEdge edge : sheet.getGraph().getEdges()) {
+                edge.setLineHandlers(null, edge.mouseEnteredHandler(), edge.mouseExitedHandler());
+            }
             sheet.setHandlers(null);
         });
     }
 
     private void configureToolBar() {
         toolBar.setOrientation(Orientation.VERTICAL);
+        configureVertexButton();
+        configureEdgeButton();
     }
 
     /*

@@ -1,9 +1,6 @@
 package view.components;
 
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 
 public class MenuBarConstructor {
     private final MenuBar menuBar;
@@ -15,6 +12,10 @@ public class MenuBarConstructor {
     public MenuBar getMenuBar() {
         return menuBar;
     }
+
+    /*
+     *      menus
+     */
 
     private static Menu getFileMenu() {
         MenuItem newMenuItem = new MenuItem("New");
