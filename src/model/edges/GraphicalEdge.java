@@ -35,7 +35,6 @@ public class GraphicalEdge extends Edge implements Graphical {
 
         selected = false;
         focused = false;
-
     }
 
     /*
@@ -119,6 +118,11 @@ public class GraphicalEdge extends Edge implements Graphical {
      *      methods
      */
 
+    public void updateLocation() {
+        updateLineAngle();
+        updateTextLocation();
+    }
+
     private double getXLength(double x1, double x2, double y1, double y2) {
         return getYLength(x1, x2, y1, y2) * (Math.abs(x2 - x1) / Math.abs(y2 - y1));
     }
@@ -162,7 +166,6 @@ public class GraphicalEdge extends Edge implements Graphical {
      */
 
     private void configureLine() {
-        line.setFill(DEFAULT_FILL);
         line.setStroke(DEFAULT_COLOR);
         line.setStrokeWidth(STROKE_WIDTH);
         line.setStrokeType(LINE_STROKE_TYPE);
@@ -197,7 +200,6 @@ public class GraphicalEdge extends Edge implements Graphical {
         getDestination().getShape().centerXProperty().addListener(event -> updateTextLocation());
         getDestination().getShape().centerYProperty().addListener(event -> updateTextLocation());
     }
-
 
     /*
      *      handlers
@@ -236,5 +238,4 @@ public class GraphicalEdge extends Edge implements Graphical {
             }
         };
     }
-
 }

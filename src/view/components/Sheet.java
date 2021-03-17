@@ -12,6 +12,7 @@ import model.interfaces.Textual;
 import model.edges.GraphicalEdge;
 import model.graphs.Graph;
 import model.vertecies.GraphicalVertex;
+import model.vertecies.Vertex;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -146,22 +147,36 @@ public class Sheet extends Pane {
      *      other method's
      */
 
-    private void removeGraphics(Graphical item) {
-        this.getChildren().removeAll(item.getGraphics());
-    }
+//    protected void horizontalAlignmentSelected() {
+//        double ySum = 0;
+//        for (GraphicalVertex vertex : getSelectedVertices()) {
+//            ySum += vertex.getY();
+//        }
+//        double yAverage = ySum / getSelectedVertices().size();
+//        for (GraphicalVertex vertex : getSelectedVertices()) {
+//            vertex.setY(yAverage);
+//        }
+//        for (GraphicalEdge edge : graph.getEdges()) {
+//            edge.updateLocation();
+//        }
+//    }
 
-    private void removeSelected() {
+    protected void removeSelected() {
         for (GraphicalEdge edge : getSelectedEdges()) remove(edge);
         for (GraphicalVertex vertex : getSelectedVertices()) remove(vertex);
     }
 
-    private void setLastSelectedId() {
+    protected void setLastSelectedId() {
         if (!selected.isEmpty()) {
             Selectable item = selected.get(selected.size() - 1);
             unselectAll();
             select(item);
             ((Textual) item).setIdentifier(getUserIdentifier((Textual) item));
         }
+    }
+
+    private void removeGraphics(Graphical item) {
+        this.getChildren().removeAll(item.getGraphics());
     }
 
     private static String getUserIdentifier(Textual item) {
@@ -189,25 +204,6 @@ public class Sheet extends Pane {
 
                     if (mouseEvent.getClickCount() == 2 && !contains(mouseEvent.getX(), mouseEvent.getY()))
                         add(new GraphicalVertex(mouseEvent.getX(), mouseEvent.getY()));
-                }
-            }
-        };
-    }
-
-    public EventHandler<KeyEvent> keyReleasedHandler() {
-        return new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                switch (keyEvent.getCode()) {
-                    case DELETE:
-                        removeSelected();
-                        break;
-                    case I:
-                        setLastSelectedId();
-                        break;
-                    case A:
-                        if (keyEvent.isControlDown()) selectAll();
-                        break;
                 }
             }
         };

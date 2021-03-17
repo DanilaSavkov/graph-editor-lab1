@@ -4,58 +4,64 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class AppConstructor {
-    private Scene scene;
+    private final Scene scene;
 
-    private GridPane root; // menu bar + task pane
-    private MenuBar menuBar;
-    private GridPane taskPane; // tool bar + tab pane
-    private ToolBar toolBar;
-    private TabPane tabPane;
-    private List<Sheet> sheets;
+    private final GridPane root; // menu bar + task pane
+    private final MenuBar menuBar;
+    private final GridPane taskPane; // tool bar + tab pane
+    private final ToolBar toolBar;
+    private final TabPane tabPane;
 
-    private ToolBarConstructor toolBarConstructor;
+    private final ToolBarConstructor toolBarConstructor;
+    private final TaskPaneConstructor taskPaneConstructor;
+    private final MenuBarConstructor menuBarConstructor;
+
+    /*
+     *      constructors
+     */
 
     public AppConstructor() {
-        sheets = new ArrayList<>();
         tabPane = new TabPane();
-        tabPane.setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
-
-        tabPane.getSelectionModel().selectedItemProperty().addListener(listener -> {
-            toolBarConstructor.setSheet(sheets.get(tabPane.getSelectionModel().getSelectedIndex()));
-        });
+        configureTabPane();
 
         toolBarConstructor = new ToolBarConstructor(null);
-        toolBar =  toolBarConstructor.getToolBar();
+        toolBar = toolBarConstructor.getToolBar();
+        configureToolBar();
 
-        taskPane = new TaskPaneConstructor(toolBar, tabPane).getTaskPane();
-        menuBar = new MenuBarConstructor().getMenuBar();
+        taskPaneConstructor = new TaskPaneConstructor(toolBar, tabPane);
+        taskPane = taskPaneConstructor.getTaskPane();
 
-        menuBar.getMenus().get(0).getItems().get(0).setOnAction(newFileHandler());
+        menuBarConstructor = new MenuBarConstructor();
+        menuBar = menuBarConstructor.getMenuBar();
+        configureMenuBar();
 
         root = new GridPane();
         configureRoot();
+
         scene = new Scene(root, 1000, 600);
     }
+
+    /*
+     *      getter's and setter's
+     */
 
     public Scene getScene() {
         return scene;
     }
 
-    public void addSheet(String name) {
-        Sheet sheet = new Sheet(name);
-        sheets.add(sheet);
-        tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
-
-        toolBarConstructor.setSheet(sheet);
+    public Sheet getActiveSheet() {
+        return (Sheet) tabPane.getSelectionModel().getSelectedItem().getContent();
     }
+
+    /*
+     *      configurations
+     */
 
     private void configureRoot() {
         root.setGridLinesVisible(false);
@@ -75,22 +81,97 @@ public class AppConstructor {
         root.add(taskPane, 0, 1);
     }
 
-    private EventHandler<ActionEvent> newFileHandler() {
-        return new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                addSheet(getNewGraphName());
+    private void configureTabPane() {
+        tabPane.setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener(listener -> {
+            if (!tabPane.getSelectionModel().isEmpty()) {
+                toolBarConstructor.setSheet(getActiveSheet());
             }
-        };
+
+            toolBar.setDisable(tabPane.getTabs().size() <= 0);
+        });
     }
 
-    private static String getNewGraphName() {
-        TextInputDialog dialog = new TextInputDialog("(Безымянный)");
+    private void configureMenuBar() {
+        menuBarConstructor.getFileMenu().getItems().get(0).setOnAction(newFileHandler());
+    }
+
+    private void configureToolBar() {
+        toolBar.setDisable(true);
+    }
+
+    /*
+     *      methods
+     */
+
+    public void createNewFile(String name) {
+        for (Tab tab : tabPane.getTabs()) {
+            if (tab.getText().equals(name)) {
+                existsGraphNameAlert(name);
+                return;
+            }
+        }
+        Sheet sheet = new Sheet(name);
+        tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
+    }
+
+    private String getUserGraphName() {
+        TextInputDialog dialog = new TextInputDialog("Unnamed");
         dialog.setTitle("New Graph");
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
         dialog.setContentText("Graph name:");
         Optional<String> result = dialog.showAndWait();
         return result.orElse(null);
+    }
+
+    private void existsGraphNameAlert(String name) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Ooops...");
+        alert.setHeaderText(null);
+        alert.setContentText("Graph named " + "'" + name + "'" + " already exist.");
+        alert.showAndWait();
+    }
+
+    /*
+     *      handlers
+     */
+
+    private EventHandler<ActionEvent> newFileHandler() {
+        return new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                createNewFile(getUserGraphName());
+            }
+        };
+    }
+
+    public EventHandler<KeyEvent> keyReleasedHandler() {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (tabPane.getTabs().size() > 0) {
+                    Sheet sheet = getActiveSheet();
+                    switch (keyEvent.getCode()) {
+                        case DELETE:
+                            sheet.removeSelected();
+                            break;
+                        case I:
+                            sheet.setLastSelectedId();
+                            break;
+                        case A:
+                            if (keyEvent.isControlDown()) sheet.selectAll();
+                            break;
+//                    case E:
+//                        if (keyEvent.isControlDown()) toolBarConstructor.edgeAction();
+//                        break;
+//                    case H:
+//                        if (keyEvent.isControlDown()) sheet.horizontalAlignmentSelected();
+//                        break;
+                    }
+                }
+            }
+        };
     }
 }

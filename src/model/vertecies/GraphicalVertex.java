@@ -36,6 +36,18 @@ public class GraphicalVertex extends Vertex implements Graphical {
      */
 
     @Override
+    public void setX(double x) {
+        super.setX(x);
+        circle.setCenterX(x);
+    }
+
+    @Override
+    public void setY(double y) {
+        super.setY(y);
+        circle.setCenterY(y);
+    }
+
+    @Override
     public Circle getShape() {
         return circle;
     }
@@ -144,9 +156,7 @@ public class GraphicalVertex extends Vertex implements Graphical {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 setSelected();
-                circle.setCenterX(mouseEvent.getX());
                 setX(mouseEvent.getX());
-                circle.setCenterY(mouseEvent.getY());
                 setY(mouseEvent.getY());
             }
         };
