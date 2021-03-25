@@ -8,6 +8,8 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import model.edges.GraphicalEdge;
+import model.interfaces.Graphical;
+import model.representations.matrices.AdjacencyMatrix;
 import model.vertecies.GraphicalVertex;
 
 import java.util.List;
@@ -15,10 +17,11 @@ import java.util.List;
 public class ToolBarConstructor {
     private static final double ENTERED_SCALE = 1.15;
     private static final Cursor ENTERED_CURSOR = Cursor.HAND;
-    private static final double BUTTON_SIDE_SIZE = 50;
+    private static final double BUTTON_SIDE_SIZE = Graphical.CIRCLE_RADIUS * 3;
 
     private static final Button VERTEX_BUTTON = new Button();
     private static final Button EDGE_BUTTON = new Button();
+    private static final Button MATRIX = new Button("M");
     private static final GraphicalVertex VERTEX_BUTTON_GRAPHICS = new GraphicalVertex(0, 0);
     private static final GraphicalEdge EDGE_BUTTON_GRAPHICS = new GraphicalEdge(new GraphicalVertex(0, 0), new GraphicalVertex(1, 1));
 
@@ -31,7 +34,7 @@ public class ToolBarConstructor {
 
     public ToolBarConstructor(Sheet sheet) {
         this.sheet = sheet;
-        toolBar = new ToolBar(VERTEX_BUTTON, new Separator(), EDGE_BUTTON);
+        toolBar = new ToolBar(VERTEX_BUTTON, new Separator(), EDGE_BUTTON, new Separator(), MATRIX);
         configureToolBar();
     }
 
@@ -41,6 +44,10 @@ public class ToolBarConstructor {
 
     public void setSheet(Sheet sheet) {
         this.sheet = sheet;
+    }
+
+    public Sheet getSheet() {
+        return sheet;
     }
 
     public ToolBar getToolBar() {
@@ -55,6 +62,7 @@ public class ToolBarConstructor {
         toolBar.setOrientation(Orientation.VERTICAL);
         configureVertexButton();
         configureEdgeButton();
+        configureMatrix();
     }
 
     private void configureVertexButton() {
@@ -99,6 +107,15 @@ public class ToolBarConstructor {
         });
     }
 
+    private void configureMatrix() {
+        MATRIX.setOnAction(actionEvent -> {
+            AdjacencyMatrix matrix = new AdjacencyMatrix((sheet.getGraph()));
+            System.out.println(matrix);
+        });
+        MATRIX.setMinSize(BUTTON_SIDE_SIZE, BUTTON_SIDE_SIZE);
+        MATRIX.setMaxSize(BUTTON_SIDE_SIZE, BUTTON_SIDE_SIZE);
+    }
+
     /*
      *      methods
      */
@@ -130,6 +147,11 @@ public class ToolBarConstructor {
             GraphicalEdge edge = new GraphicalEdge(source, destination);
             sheet.add(edge);
         }
+    }
+
+    public void setDisable() {
+        EDGE_BUTTON_GRAPHICS.setUnselected();
+        VERTEX_BUTTON_GRAPHICS.setUnselected();
     }
 
     /*

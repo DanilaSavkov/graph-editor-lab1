@@ -1,12 +1,25 @@
 package view.components;
 
+import file.GraphFileReader;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import model.edges.Edge;
+import model.graphs.Graph;
+import model.vertecies.Vertex;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 public class AppConstructor {
@@ -19,7 +32,6 @@ public class AppConstructor {
     private final TabPane tabPane;
 
     private final ToolBarConstructor toolBarConstructor;
-    private final TaskPaneConstructor taskPaneConstructor;
     private final MenuBarConstructor menuBarConstructor;
 
     /*
@@ -34,8 +46,7 @@ public class AppConstructor {
         toolBar = toolBarConstructor.getToolBar();
         configureToolBar();
 
-        taskPaneConstructor = new TaskPaneConstructor(toolBar, tabPane);
-        taskPane = taskPaneConstructor.getTaskPane();
+        taskPane = new TaskPaneConstructor(toolBar, tabPane).getTaskPane();
 
         menuBarConstructor = new MenuBarConstructor();
         menuBar = menuBarConstructor.getMenuBar();
@@ -83,10 +94,11 @@ public class AppConstructor {
 
     private void configureTabPane() {
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
-
         tabPane.getSelectionModel().selectedItemProperty().addListener(listener -> {
             if (!tabPane.getSelectionModel().isEmpty()) {
                 toolBarConstructor.setSheet(getActiveSheet());
+                toolBarConstructor.setDisable();
+                toolBarConstructor.getSheet().setHandlers(null);
             }
 
             toolBar.setDisable(tabPane.getTabs().size() <= 0);
@@ -95,6 +107,7 @@ public class AppConstructor {
 
     private void configureMenuBar() {
         menuBarConstructor.getFileMenu().getItems().get(0).setOnAction(newFileHandler());
+        menuBarConstructor.getFileMenu().getItems().get(1).setOnAction(openFileHandler());
     }
 
     private void configureToolBar() {
@@ -112,18 +125,30 @@ public class AppConstructor {
                 return;
             }
         }
-        Sheet sheet = new Sheet(name);
-        tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
+        if (name != null) {
+            Sheet sheet = new Sheet(name);
+            tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
+        }
     }
 
     private String getUserGraphName() {
-        TextInputDialog dialog = new TextInputDialog("Unnamed");
+        TextInputDialog dialog = new TextInputDialog("Graph");
         dialog.setTitle("New Graph");
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
         dialog.setContentText("Graph name:");
         Optional<String> result = dialog.showAndWait();
         return result.orElse(null);
+    }
+
+    private File userFileChooser() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select graph file");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("GRAPH", "*.graph")
+        );
+        return chooser.showOpenDialog(new Stage());
     }
 
     private void existsGraphNameAlert(String name) {
@@ -147,6 +172,27 @@ public class AppConstructor {
         };
     }
 
+    private EventHandler<ActionEvent> openFileHandler() {
+        return new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                GraphFileReader work = new GraphFileReader();
+                try {
+                    Graph<Vertex, Edge> graph = GraphFileReader.read(userFileChooser());
+                    Sheet sheet = new Sheet(graph);
+                    sheet.setHandlers(null);
+                    tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
     public EventHandler<KeyEvent> keyReleasedHandler() {
         return new EventHandler<KeyEvent>() {
             @Override
@@ -163,12 +209,6 @@ public class AppConstructor {
                         case A:
                             if (keyEvent.isControlDown()) sheet.selectAll();
                             break;
-//                    case E:
-//                        if (keyEvent.isControlDown()) toolBarConstructor.edgeAction();
-//                        break;
-//                    case H:
-//                        if (keyEvent.isControlDown()) sheet.horizontalAlignmentSelected();
-//                        break;
                     }
                 }
             }

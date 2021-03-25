@@ -2,15 +2,15 @@ package view.components;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import model.edges.Edge;
+import model.edges.GraphicalEdge;
+import model.graphs.Graph;
 import model.interfaces.Graphical;
 import model.interfaces.Selectable;
 import model.interfaces.Textual;
-import model.edges.GraphicalEdge;
-import model.graphs.Graph;
 import model.vertecies.GraphicalVertex;
 import model.vertecies.Vertex;
 
@@ -29,6 +29,26 @@ public class Sheet extends Pane {
 
     public Sheet(String name) {
         graph = new Graph<>(name);
+        selected = new ArrayList<>();
+        setHandlers(null);
+    }
+
+    public Sheet(Graph<Vertex, Edge> graph) {
+        this.graph = new Graph<>(graph.getName());
+        for (Vertex vertex : graph.getVertices()) {
+            GraphicalVertex graphicalVertex = new GraphicalVertex(vertex.getX(), vertex.getY());
+            graphicalVertex.setIdentifier(vertex.getIdentifier());
+            graphicalVertex.setCircleHandlers(null, null, graphicalVertex.mouseEnteredHandler(), graphicalVertex.mouseExitedHandler());
+            add(graphicalVertex);
+        }
+        for (Edge edge : graph.getEdges()) {
+            GraphicalVertex source = (GraphicalVertex) this.graph.find(new GraphicalVertex(edge.getSource().getX(), edge.getSource().getY()));
+            GraphicalVertex destination = (GraphicalVertex) this.graph.find(new GraphicalVertex(edge.getDestination().getX(), edge.getDestination().getY()));
+            GraphicalEdge graphicalEdge = new GraphicalEdge(source, destination);
+            graphicalEdge.setIdentifier(edge.getIdentifier());
+            graphicalEdge.setLineHandlers(null, graphicalEdge.mouseEnteredHandler(), graphicalEdge.mouseExitedHandler());
+            add(graphicalEdge);
+        }
         selected = new ArrayList<>();
         setHandlers(null);
     }
@@ -146,20 +166,6 @@ public class Sheet extends Pane {
     /*
      *      other method's
      */
-
-//    protected void horizontalAlignmentSelected() {
-//        double ySum = 0;
-//        for (GraphicalVertex vertex : getSelectedVertices()) {
-//            ySum += vertex.getY();
-//        }
-//        double yAverage = ySum / getSelectedVertices().size();
-//        for (GraphicalVertex vertex : getSelectedVertices()) {
-//            vertex.setY(yAverage);
-//        }
-//        for (GraphicalEdge edge : graph.getEdges()) {
-//            edge.updateLocation();
-//        }
-//    }
 
     protected void removeSelected() {
         for (GraphicalEdge edge : getSelectedEdges()) remove(edge);

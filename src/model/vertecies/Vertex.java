@@ -7,18 +7,10 @@ public class Vertex implements Identified {
     private double y;
     private String identifier;
 
-    /*
-     *      constructors
-     */
-
     public Vertex(double x, double y) {
         this.x = x;
         this.y = y;
     }
-
-    /*
-     *      getter's and setter's
-     */
 
     public double getX() {
         return x;

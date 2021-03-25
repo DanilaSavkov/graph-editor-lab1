@@ -8,18 +8,10 @@ public class Edge implements Identified {
     private Vertex destination;
     private String identifier;
 
-    /*
-     *      constructors
-     */
-
     public Edge(Vertex source, Vertex destination) {
         this.source = source;
         this.destination = destination;
     }
-
-    /*
-     *      getter's and setter's
-     */
 
     public Vertex getSource() {
         return source;
@@ -46,10 +38,6 @@ public class Edge implements Identified {
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
-
-    /*
-     *      main method's
-     */
 
     public boolean contains(Vertex vertex) {
         return source.equals(vertex) || destination.equals(vertex);

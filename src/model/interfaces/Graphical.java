@@ -8,7 +8,7 @@ public interface Graphical extends Selectable, Focusable, Textual {
     Color DEFAULT_COLOR = Color.BLACK;
     Color DEFAULT_FILL = Color.TRANSPARENT;
 
-    double CIRCLE_RADIUS = 15;
+    double CIRCLE_RADIUS = 20;
     double STROKE_WIDTH = CIRCLE_RADIUS / 3;
 
     StrokeType LINE_STROKE_TYPE = StrokeType.CENTERED;

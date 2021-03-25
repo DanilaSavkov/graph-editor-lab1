@@ -10,19 +10,11 @@ public class Graph<V extends Vertex, E extends Edge> {
     private final List<V> vertices;
     private final List<E> edges;
 
-    /*
-     *      constructors
-     */
-
     public Graph(String name) {
         this.name = name;
         this.vertices = new ArrayList<>();
         this.edges = new ArrayList<>();
     }
-
-    /*
-     *      getter's and setter's
-     */
 
     public String getName() {
         return name;
@@ -48,10 +40,6 @@ public class Graph<V extends Vertex, E extends Edge> {
         return edges.size();
     }
 
-    /*
-     *      other methods
-     */
-
     public void add(V vertex) {
         vertices.add(vertex);
     }
@@ -68,5 +56,12 @@ public class Graph<V extends Vertex, E extends Edge> {
 
     public void remove(E edge) {
         edges.remove(edge);
+    }
+
+    public Vertex find(V vertex) {
+        for (Vertex graphVertex : getVertices()) {
+            if (vertex.getX() == graphVertex.getX() && vertex.getY() == graphVertex.getY()) return graphVertex;
+        }
+        return null;
     }
 }

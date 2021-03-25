@@ -6,24 +6,28 @@ import model.representations.GraphRepresentation;
 import model.vertecies.Vertex;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public abstract class Matrix<T> extends GraphRepresentation {
-    private final Map<Vertex, List<T>> matrix;
+public abstract class Matrix<V extends Vertex, E extends Edge, T> extends GraphRepresentation<V, E> {
+    private Map<V, Map<V, T>> matrix  = new HashMap<>();
 
-    public Matrix(Graph<Vertex, Edge> graph) {
+    public Matrix(Graph<V, E> graph) {
         super(graph);
-        matrix = new HashMap<>();
-        configure();
     }
 
-    public Map<Vertex, List<T>> getMatrix() {
+    public Map<V, Map<V, T>> getMatrix() {
         return matrix;
     }
 
     @Override
-    public void configure() {
-
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (V vertex : matrix.keySet()) {
+            for (Map.Entry<V, T> vertexTEntry : matrix.get(vertex).entrySet()) {
+                result.append(vertexTEntry.getValue());
+            }
+            result.append("\n");
+        }
+        return result.toString();
     }
 }

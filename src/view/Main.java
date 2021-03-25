@@ -4,8 +4,7 @@ import javafx.application.Application;
 
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-import view.components.*;
+import view.components.AppConstructor;
 
 public class Main extends Application {
     @Override
