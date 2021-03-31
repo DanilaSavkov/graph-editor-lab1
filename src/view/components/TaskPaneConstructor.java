@@ -7,7 +7,6 @@ import javafx.scene.layout.*;
 
 public class TaskPaneConstructor {
     private final GridPane taskPane;
-
     private final ToolBar toolBar;
     private final TabPane tabPane;
 

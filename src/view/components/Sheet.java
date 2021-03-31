@@ -1,6 +1,7 @@
 package view.components;
 
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -10,22 +11,16 @@ import model.edges.GraphicalEdge;
 import model.graphs.Graph;
 import model.interfaces.Graphical;
 import model.interfaces.Selectable;
-import model.interfaces.Textual;
 import model.vertecies.GraphicalVertex;
 import model.vertecies.Vertex;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 public class Sheet extends Pane {
     private final Graph<GraphicalVertex, GraphicalEdge> graph;
     private List<Selectable> selected;
-
-    /*
-     *      constructors
-     */
 
     public Sheet(String name) {
         graph = new Graph<>(name);
@@ -45,20 +40,12 @@ public class Sheet extends Pane {
             GraphicalVertex source = (GraphicalVertex) this.graph.find(new GraphicalVertex(edge.getSource().getX(), edge.getSource().getY()));
             GraphicalVertex destination = (GraphicalVertex) this.graph.find(new GraphicalVertex(edge.getDestination().getX(), edge.getDestination().getY()));
             GraphicalEdge graphicalEdge = new GraphicalEdge(source, destination);
-            graphicalEdge.setIdentifier(edge.getIdentifier());
+            graphicalEdge.setWeight(edge.getWeight());
             graphicalEdge.setLineHandlers(null, graphicalEdge.mouseEnteredHandler(), graphicalEdge.mouseExitedHandler());
             add(graphicalEdge);
         }
         selected = new ArrayList<>();
         setHandlers(null);
-    }
-
-    /*
-     *      getter's and setter's
-     */
-
-    public List<Selectable> getSelected() {
-        return selected;
     }
 
     public List<GraphicalVertex> getSelectedVertices() {
@@ -88,10 +75,6 @@ public class Sheet extends Pane {
     public void setHandlers(EventHandler<MouseEvent> mouseClickedHandler) {
         setOnMouseClicked(mouseClickedHandler);
     }
-
-    /*
-     *      main methods
-     */
 
     public void add(GraphicalVertex vertex) {
         graph.add(vertex);
@@ -163,41 +146,65 @@ public class Sheet extends Pane {
         selected = new ArrayList<>();
     }
 
-    /*
-     *      other method's
-     */
-
     protected void removeSelected() {
         for (GraphicalEdge edge : getSelectedEdges()) remove(edge);
         for (GraphicalVertex vertex : getSelectedVertices()) remove(vertex);
     }
 
     protected void setLastSelectedId() {
-        if (!selected.isEmpty()) {
-            Selectable item = selected.get(selected.size() - 1);
+        if (!getSelectedVertices().isEmpty()) {
+            Vertex vertex = getSelectedVertices().get(getSelectedVertices().size() - 1);
             unselectAll();
-            select(item);
-            ((Textual) item).setIdentifier(getUserIdentifier((Textual) item));
+            select((Selectable) vertex);
+            String userIdentifier = getUserIdentifier(vertex);
+            if (userIdentifier != null) vertex.setIdentifier(userIdentifier);
         }
+    }
+
+    protected void setLastSelectedWeight() {
+        if (!getSelectedEdges().isEmpty()) {
+            Edge edge = getSelectedEdges().get(getSelectedEdges().size() - 1);
+            unselectAll();
+            select((Selectable) edge);
+            String userWeight = getUserWeight(edge);
+            try {
+                if (userWeight != null) edge.setWeight(Integer.parseInt(userWeight));
+            } catch (NumberFormatException e) {
+                showEdgeWeightAlert(userWeight);
+            }
+        }
+    }
+
+    private void showEdgeWeightAlert(String wrongInput) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Wrong format");
+        alert.setHeaderText(null);
+        alert.setContentText("\"" + wrongInput + "\" is not seems like edge weight, try again ...");
+        alert.showAndWait();
     }
 
     private void removeGraphics(Graphical item) {
         this.getChildren().removeAll(item.getGraphics());
     }
 
-    private static String getUserIdentifier(Textual item) {
-        TextInputDialog dialog = new TextInputDialog(item.getText().getText());
-        dialog.setTitle("Change identifier");
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-        dialog.setContentText("New identifier:");
-        Optional<String> result = dialog.showAndWait();
-        return result.orElse(null);
+    private static String getUserIdentifier(Vertex vertex) {
+        TextInputDialog dialog = new TextInputDialog(vertex.getIdentifier());
+        setDialogProperties(dialog, "Change vertex identifier", "New vertex identifier:");
+        return dialog.showAndWait().orElse(null);
     }
 
-    /*
-     *      handlers
-     */
+    private static String getUserWeight(Edge edge) {
+        TextInputDialog dialog = new TextInputDialog(String.valueOf(edge.getWeight()));
+        setDialogProperties(dialog, "Change edge weight", "New edge weight:");
+        return dialog.showAndWait().orElse(null);
+    }
+
+    private static void setDialogProperties(TextInputDialog dialog, String title, String contentText) {
+        dialog.setTitle(title);
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
+        dialog.setContentText(contentText);
+    }
 
     public EventHandler<MouseEvent> mouseClickedHandler() {
         return new EventHandler<MouseEvent>() {

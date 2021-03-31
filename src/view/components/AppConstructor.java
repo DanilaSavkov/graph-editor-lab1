@@ -1,7 +1,9 @@
 package view.components;
 
 import file.GraphFileReader;
-import javafx.event.ActionEvent;
+import file.GraphFileWriter;
+import file.XMLGenerationException;
+import file.XMLReadingException;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,29 +16,21 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.edges.Edge;
 import model.graphs.Graph;
+import model.AdjacencyMatrix;
 import model.vertecies.Vertex;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 public class AppConstructor {
     private final Scene scene;
-
     private final GridPane root; // menu bar + task pane
     private final MenuBar menuBar;
     private final GridPane taskPane; // tool bar + tab pane
     private final ToolBar toolBar;
     private final TabPane tabPane;
-
     private final ToolBarConstructor toolBarConstructor;
     private final MenuBarConstructor menuBarConstructor;
-
-    /*
-     *      constructors
-     */
 
     public AppConstructor() {
         tabPane = new TabPane();
@@ -58,21 +52,13 @@ public class AppConstructor {
         scene = new Scene(root, 1000, 600);
     }
 
-    /*
-     *      getter's and setter's
-     */
-
     public Scene getScene() {
         return scene;
     }
 
-    public Sheet getActiveSheet() {
+    private Sheet getActiveSheet() {
         return (Sheet) tabPane.getSelectionModel().getSelectedItem().getContent();
     }
-
-    /*
-     *      configurations
-     */
 
     private void configureRoot() {
         root.setGridLinesVisible(false);
@@ -106,22 +92,48 @@ public class AppConstructor {
     }
 
     private void configureMenuBar() {
-        menuBarConstructor.getFileMenu().getItems().get(0).setOnAction(newFileHandler());
-        menuBarConstructor.getFileMenu().getItems().get(1).setOnAction(openFileHandler());
+        menuBarConstructor.getFileMenu().getItems().get(0).setOnAction(actionEvent -> {
+            createNewSheet(getUserGraphName());
+        });
+        menuBarConstructor.getFileMenu().getItems().get(1).setOnAction(actionEvent -> {
+            GraphFileReader work = new GraphFileReader();
+            try {
+                Graph<Vertex, Edge> graph = GraphFileReader.read(getOpenedFile());
+                for (Tab tab : tabPane.getTabs()) {
+                    if (tab.getText().equals(graph.getName())) {
+                        return;
+                    }
+                }
+                Sheet sheet = new Sheet(graph);
+                sheet.setHandlers(null);
+                tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
+            } catch (XMLReadingException e) {
+                showFileAlert(e.getMessage());
+            } catch (IllegalArgumentException ignored) {
+
+            }
+        });
+        menuBarConstructor.getFileMenu().getItems().get(2).setOnAction(actionEvent -> {
+            try {
+                File path = getSavingDirectory(getActiveSheet().getGraph().getName());
+                getActiveSheet().getGraph().setName(path.getName());
+                tabPane.getSelectionModel().getSelectedItem().setText(path.getName());
+                GraphFileWriter writer = new GraphFileWriter(getActiveSheet().getGraph());
+                writer.writeXML(path);
+            } catch (XMLGenerationException e) {
+                showFileAlert(e.getMessage());
+            }
+        });
     }
 
     private void configureToolBar() {
         toolBar.setDisable(true);
     }
 
-    /*
-     *      methods
-     */
-
-    public void createNewFile(String name) {
+    private void createNewSheet(String name) {
         for (Tab tab : tabPane.getTabs()) {
             if (tab.getText().equals(name)) {
-                existsGraphNameAlert(name);
+                showExistsGraphAlert(name);
                 return;
             }
         }
@@ -141,17 +153,28 @@ public class AppConstructor {
         return result.orElse(null);
     }
 
-    private File userFileChooser() {
+    private File getOpenedFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select graph file");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.getExtensionFilters().addAll(
+        chooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("GRAPH", "*.graph")
         );
         return chooser.showOpenDialog(new Stage());
     }
 
-    private void existsGraphNameAlert(String name) {
+    private File getSavingDirectory(String initialName) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select directory");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setInitialFileName(initialName);
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("DIR", "*/*")
+        );
+        return chooser.showSaveDialog(new Stage());
+    }
+
+    private void showExistsGraphAlert(String name) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Ooops...");
         alert.setHeaderText(null);
@@ -159,38 +182,12 @@ public class AppConstructor {
         alert.showAndWait();
     }
 
-    /*
-     *      handlers
-     */
-
-    private EventHandler<ActionEvent> newFileHandler() {
-        return new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                createNewFile(getUserGraphName());
-            }
-        };
-    }
-
-    private EventHandler<ActionEvent> openFileHandler() {
-        return new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                GraphFileReader work = new GraphFileReader();
-                try {
-                    Graph<Vertex, Edge> graph = GraphFileReader.read(userFileChooser());
-                    Sheet sheet = new Sheet(graph);
-                    sheet.setHandlers(null);
-                    tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
-                } catch (SAXException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
+    private void showFileAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ooops...");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public EventHandler<KeyEvent> keyReleasedHandler() {
@@ -206,12 +203,22 @@ public class AppConstructor {
                         case I:
                             sheet.setLastSelectedId();
                             break;
+                        case W:
+                            sheet.setLastSelectedWeight();
                         case A:
                             if (keyEvent.isControlDown()) sheet.selectAll();
+                            break;
+                        case M:
+                            if (keyEvent.isControlDown()) showMatrix();
                             break;
                     }
                 }
             }
         };
+    }
+
+    private void showMatrix() {
+        AdjacencyMatrix adjacencyMatrix = new AdjacencyMatrix(getActiveSheet().getGraph());
+        System.out.println(adjacencyMatrix);
     }
 }

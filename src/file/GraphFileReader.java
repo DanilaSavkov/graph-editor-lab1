@@ -15,6 +15,7 @@ import java.io.IOException;
 
 public class GraphFileReader implements XMLConstants {
     private static Graph<Vertex, Edge> graph;
+
     public static class XMLGraphReader extends DefaultHandler {
         private String identifier;
         private Vertex source;
@@ -55,19 +56,25 @@ public class GraphFileReader implements XMLConstants {
         public void endElement(String uri, String localName, String qName) throws SAXException {
             if (qName.equals(EDGE)) {
                 Edge edge = new Edge(source, destination);
-                edge.setIdentifier(identifier);
+                edge.setWeight(Integer.valueOf(identifier));
                 graph.add(edge);
             }
         }
     }
 
-    public static Graph<Vertex, Edge> read(File file) throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser parser = factory.newSAXParser();
-
-        XMLGraphReader handler = new XMLGraphReader();
-        parser.parse(file, handler);
-
+    public static Graph<Vertex, Edge> read(File file) throws XMLReadingException {
+        parseFile(file);
         return graph;
+    }
+
+    private static void parseFile(File file) throws XMLReadingException {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser parser = factory.newSAXParser();
+            XMLGraphReader handler = new XMLGraphReader();
+            parser.parse(file, handler);
+        } catch (ParserConfigurationException | IOException | SAXException exception) {
+            throw new XMLReadingException("File can't be read...", exception);
+        }
     }
 }

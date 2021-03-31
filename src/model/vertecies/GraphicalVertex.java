@@ -14,10 +14,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
     private boolean selected;
     private boolean focused;
 
-    /*
-     *      constructors
-     */
-
     public GraphicalVertex(double x, double y) {
         super(x, y);
 
@@ -30,10 +26,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
         selected = false;
         focused = false;
     }
-
-    /*
-     *      getter's and setter's
-     */
 
     @Override
     public void setX(double x) {
@@ -112,10 +104,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
         circle.setOnMouseExited(mouseExitedHandler);
     }
 
-    /*
-     *      configurations
-     */
-
     private void configureCircle() {
         circle.setFill(DEFAULT_FILL);
         circle.setOpacity(CIRCLE_FILL_OPACITY);
@@ -135,10 +123,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
         text.xProperty().bind(circle.centerXProperty().add(CIRCLE_RADIUS));
         text.yProperty().bind(circle.centerYProperty().add(CIRCLE_RADIUS));
     }
-
-    /*
-     *      handlers
-     */
 
     public EventHandler<MouseEvent> mouseClickedHandler() {
         return new EventHandler<MouseEvent>() {

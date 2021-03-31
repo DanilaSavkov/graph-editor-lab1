@@ -17,10 +17,6 @@ public class GraphicalEdge extends Edge implements Graphical {
     private boolean selected;
     private boolean focused;
 
-    /*
-     *      constructors
-     */
-
     public GraphicalEdge(GraphicalVertex source, GraphicalVertex destination) {
         super(source, destination);
 
@@ -36,10 +32,6 @@ public class GraphicalEdge extends Edge implements Graphical {
         selected = false;
         focused = false;
     }
-
-    /*
-     *      getter's and setter's
-     */
 
     @Override
     public Line getShape() {
@@ -101,9 +93,9 @@ public class GraphicalEdge extends Edge implements Graphical {
     }
 
     @Override
-    public void setIdentifier(String identifier) {
-        super.setIdentifier(identifier);
-        text.setText(identifier);
+    public void setWeight(int weight) {
+        super.setWeight(weight);
+        text.setText(String.valueOf(weight));
     }
 
     public void setLineHandlers(EventHandler<MouseEvent> mouseClickedHandler,
@@ -112,15 +104,6 @@ public class GraphicalEdge extends Edge implements Graphical {
         line.setOnMouseClicked(mouseClickedHandler);
         line.setOnMouseEntered(mouseEnteredHandler);
         line.setOnMouseExited(mouseExitedHandler);
-    }
-
-    /*
-     *      methods
-     */
-
-    public void updateLocation() {
-        updateLineAngle();
-        updateTextLocation();
     }
 
     private double getXLength(double x1, double x2, double y1, double y2) {
@@ -161,10 +144,6 @@ public class GraphicalEdge extends Edge implements Graphical {
         text.yProperty().bind(frame.startYProperty().add(deltaYSign * Math.abs(frame.getStartY() - frame.getEndY()) / 2));
     }
 
-    /*
-     *      configurations
-     */
-
     private void configureLine() {
         line.setStroke(DEFAULT_COLOR);
         line.setStrokeWidth(STROKE_WIDTH);
@@ -200,10 +179,6 @@ public class GraphicalEdge extends Edge implements Graphical {
         getDestination().getShape().centerXProperty().addListener(event -> updateTextLocation());
         getDestination().getShape().centerYProperty().addListener(event -> updateTextLocation());
     }
-
-    /*
-     *      handlers
-     */
 
     public EventHandler<MouseEvent> mouseClickedHandler() {
         return new EventHandler<MouseEvent>() {

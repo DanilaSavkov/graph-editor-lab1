@@ -6,8 +6,8 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public interface Textual extends Identified {
-    double FONT_SIZE = 15;
+public interface Textual {
+    double FONT_SIZE = 20;
     String FONT_FAMILY = "Arial";
     FontWeight FONT_WEIGHT = FontWeight.BOLD;
     FontPosture FONT_POSTURE = FontPosture.ITALIC;
