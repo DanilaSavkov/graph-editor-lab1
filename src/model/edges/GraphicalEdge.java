@@ -1,7 +1,6 @@
 package model.edges;
 
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -178,39 +177,5 @@ public class GraphicalEdge extends Edge implements Graphical {
         getSource().getShape().centerYProperty().addListener(event -> updateTextLocation());
         getDestination().getShape().centerXProperty().addListener(event -> updateTextLocation());
         getDestination().getShape().centerYProperty().addListener(event -> updateTextLocation());
-    }
-
-    public EventHandler<MouseEvent> mouseClickedHandler() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    setSelected();
-                }
-            }
-        };
-    }
-
-    public EventHandler<MouseEvent> mouseEnteredHandler() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (!selected) {
-                    setFocused();
-                }
-            }
-        };
-    }
-
-    public EventHandler<MouseEvent> mouseExitedHandler() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                setUnfocused();
-                if (selected) {
-                    setSelected();
-                }
-            }
-        };
     }
 }

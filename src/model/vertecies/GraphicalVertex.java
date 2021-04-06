@@ -1,7 +1,6 @@
 package model.vertecies;
 
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
@@ -124,17 +123,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
         text.yProperty().bind(circle.centerYProperty().add(CIRCLE_RADIUS));
     }
 
-    public EventHandler<MouseEvent> mouseClickedHandler() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    setSelected();
-                }
-            }
-        };
-    }
-
     public EventHandler<MouseEvent> mouseDraggedHandler() {
         return new EventHandler<MouseEvent>() {
             @Override
@@ -142,29 +130,6 @@ public class GraphicalVertex extends Vertex implements Graphical {
                 setSelected();
                 setX(mouseEvent.getX());
                 setY(mouseEvent.getY());
-            }
-        };
-    }
-
-    public EventHandler<MouseEvent> mouseEnteredHandler() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (!selected) {
-                    setFocused();
-                }
-            }
-        };
-    }
-
-    public EventHandler<MouseEvent> mouseExitedHandler() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                setUnfocused();
-                if (selected) {
-                    setSelected();
-                }
             }
         };
     }

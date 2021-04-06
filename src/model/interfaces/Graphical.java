@@ -1,5 +1,8 @@
 package model.interfaces;
 
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
@@ -17,4 +20,38 @@ public interface Graphical extends Selectable, Focusable, Textual {
     Shape getShape();
 
     Shape[] getGraphics();
+
+    default EventHandler<MouseEvent> mouseEnteredHandler() {
+        return new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (!isSelected()) {
+                    setFocused();
+                }
+            }
+        };
+    }
+
+    default EventHandler<MouseEvent> mouseExitedHandler() {
+        return new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                setUnfocused();
+                if (isSelected()) {
+                    setSelected();
+                }
+            }
+        };
+    }
+
+    default EventHandler<MouseEvent> mouseClickedHandler() {
+        return new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                    setSelected();
+                }
+            }
+        };
+    }
 }

@@ -15,8 +15,6 @@ public class Main extends Application {
         stage.setTitle("KBE Premium");
         stage.addEventFilter(KeyEvent.KEY_RELEASED, constructor.keyReleasedHandler());
         stage.show();
-
-
     }
 
     public static void main(String[] args) {

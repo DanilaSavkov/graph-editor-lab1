@@ -6,64 +6,40 @@ import file.XMLGenerationException;
 import file.XMLReadingException;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.scene.layout.*;
+import model.AlgorithmSolver;
 import model.edges.Edge;
 import model.graphs.Graph;
-import model.AdjacencyMatrix;
 import model.vertecies.Vertex;
+import view.components.menubar.AppMenuBar;
+import view.components.tabpane.AppTabPane;
+import view.components.tabpane.Sheet;
+import view.components.toolbar.AppToolBar;
 
 import java.io.File;
-import java.util.Optional;
 
 public class AppConstructor {
-    private final Scene scene;
-    private final GridPane root; // menu bar + task pane
-    private final MenuBar menuBar;
-    private final GridPane taskPane; // tool bar + tab pane
-    private final ToolBar toolBar;
-    private final TabPane tabPane;
-    private final ToolBarConstructor toolBarConstructor;
-    private final MenuBarConstructor menuBarConstructor;
+    private static final AppTabPane TAB_PANE = new AppTabPane();
+    private static final AppToolBar TOOL_BAR = new AppToolBar(null);
+    private static final AppMenuBar MENU_BAR = new AppMenuBar();
 
     public AppConstructor() {
-        tabPane = new TabPane();
+        TOOL_BAR.setDisable(true);
         configureTabPane();
-
-        toolBarConstructor = new ToolBarConstructor(null);
-        toolBar = toolBarConstructor.getToolBar();
-        configureToolBar();
-
-        taskPane = new TaskPaneConstructor(toolBar, tabPane).getTaskPane();
-
-        menuBarConstructor = new MenuBarConstructor();
-        menuBar = menuBarConstructor.getMenuBar();
         configureMenuBar();
-
-        root = new GridPane();
-        configureRoot();
-
-        scene = new Scene(root, 1000, 600);
     }
 
     public Scene getScene() {
-        return scene;
+        return new Scene(getRoot(), 1000, 600);
     }
 
-    private Sheet getActiveSheet() {
-        return (Sheet) tabPane.getSelectionModel().getSelectedItem().getContent();
-    }
-
-    private void configureRoot() {
+    private Pane getRoot() {
+        GridPane root = new GridPane();
         root.setGridLinesVisible(false);
+        GridPane taskPane = new TaskPaneConstructor(TOOL_BAR, TAB_PANE).getTaskPane();
 
-        RowConstraints row1 = new RowConstraints(menuBar.getMaxHeight(), menuBar.getMaxHeight(), Double.MAX_VALUE);
+        RowConstraints row1 = new RowConstraints(MENU_BAR.getMaxHeight(), MENU_BAR.getMaxHeight(), Double.MAX_VALUE);
         row1.setVgrow(Priority.NEVER);
         RowConstraints row3 = new RowConstraints(taskPane.getMaxHeight(), taskPane.getMaxHeight(), Double.MAX_VALUE);
         row3.setVgrow(Priority.ALWAYS);
@@ -74,128 +50,72 @@ public class AppConstructor {
         root.getRowConstraints().add(row3);
         root.getColumnConstraints().add(col1);
 
-        root.add(menuBar, 0, 0);
+        root.add(MENU_BAR, 0, 0);
         root.add(taskPane, 0, 1);
+        return root;
     }
 
     private void configureTabPane() {
-        tabPane.setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
-        tabPane.getSelectionModel().selectedItemProperty().addListener(listener -> {
-            if (!tabPane.getSelectionModel().isEmpty()) {
-                toolBarConstructor.setSheet(getActiveSheet());
-                toolBarConstructor.setDisable();
-                toolBarConstructor.getSheet().setHandlers(null);
+        TAB_PANE.getSelectionModel().selectedItemProperty().addListener(listener -> {
+            if (!TAB_PANE.getSelectionModel().isEmpty()) {
+                TOOL_BAR.setSheet(TAB_PANE.getActiveSheet());
+                TOOL_BAR.setDisable();
+                TOOL_BAR.getSheet().setHandlers(null);
             }
-
-            toolBar.setDisable(tabPane.getTabs().size() <= 0);
+            TOOL_BAR.setDisable(TAB_PANE.getTabs().size() <= 0);
+            TOOL_BAR.setDisable();
         });
     }
 
     private void configureMenuBar() {
-        menuBarConstructor.getFileMenu().getItems().get(0).setOnAction(actionEvent -> {
-            createNewSheet(getUserGraphName());
+        MENU_BAR.getFileMenu().getNewFileMenuItem().setOnAction(actionEvent -> {
+            TAB_PANE.addSheet(Dialogs.getUserGraphName());
         });
-        menuBarConstructor.getFileMenu().getItems().get(1).setOnAction(actionEvent -> {
-            GraphFileReader work = new GraphFileReader();
+        MENU_BAR.getFileMenu().getOpenFileMenuItem().setOnAction(actionEvent -> {
             try {
-                Graph<Vertex, Edge> graph = GraphFileReader.read(getOpenedFile());
-                for (Tab tab : tabPane.getTabs()) {
-                    if (tab.getText().equals(graph.getName())) {
-                        return;
-                    }
-                }
+                Graph<Vertex, Edge> graph = GraphFileReader.read(Dialogs.getFileToOpenChoose());
+                if (TAB_PANE.contains(graph.getName())) return;
                 Sheet sheet = new Sheet(graph);
                 sheet.setHandlers(null);
-                tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
+                TAB_PANE.addSheet(sheet);
             } catch (XMLReadingException e) {
-                showFileAlert(e.getMessage());
+                Dialogs.showFileError(e.getMessage());
             } catch (IllegalArgumentException ignored) {
 
             }
         });
-        menuBarConstructor.getFileMenu().getItems().get(2).setOnAction(actionEvent -> {
+        MENU_BAR.getFileMenu().getSaveAsFileMenuItem().setOnAction(actionEvent -> {
             try {
-                File path = getSavingDirectory(getActiveSheet().getGraph().getName());
-                getActiveSheet().getGraph().setName(path.getName());
-                tabPane.getSelectionModel().getSelectedItem().setText(path.getName());
-                GraphFileWriter writer = new GraphFileWriter(getActiveSheet().getGraph());
+                File path = Dialogs.getPathToSaveFile(TAB_PANE.getActiveSheet().getGraph().getName());
+                TAB_PANE.getActiveSheet().getGraph().setName(path.getName());
+                TAB_PANE.getSelectionModel().getSelectedItem().setText(path.getName());
+                GraphFileWriter writer = new GraphFileWriter(TAB_PANE.getActiveSheet().getGraph());
                 writer.writeXML(path);
             } catch (XMLGenerationException e) {
-                showFileAlert(e.getMessage());
+                Dialogs.showFileError(e.getMessage());
+            } catch (NullPointerException ignored) {
+
             }
         });
-    }
 
-    private void configureToolBar() {
-        toolBar.setDisable(true);
-    }
+        MENU_BAR.getToolsMenu().getVertexModeMenuItem().setOnAction(TOOL_BAR::vertexButtonOnAction);
+        MENU_BAR.getToolsMenu().getEdgeModeMenuItem().setOnAction(TOOL_BAR::edgeButtonOnAction);
 
-    private void createNewSheet(String name) {
-        for (Tab tab : tabPane.getTabs()) {
-            if (tab.getText().equals(name)) {
-                showExistsGraphAlert(name);
-                return;
-            }
-        }
-        if (name != null) {
-            Sheet sheet = new Sheet(name);
-            tabPane.getTabs().add(new Tab(sheet.getGraph().getName(), sheet));
-        }
-    }
-
-    private String getUserGraphName() {
-        TextInputDialog dialog = new TextInputDialog("Graph");
-        dialog.setTitle("New Graph");
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-        dialog.setContentText("Graph name:");
-        Optional<String> result = dialog.showAndWait();
-        return result.orElse(null);
-    }
-
-    private File getOpenedFile() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select graph file");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("GRAPH", "*.graph")
-        );
-        return chooser.showOpenDialog(new Stage());
-    }
-
-    private File getSavingDirectory(String initialName) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select directory");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setInitialFileName(initialName);
-        chooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("DIR", "*/*")
-        );
-        return chooser.showSaveDialog(new Stage());
-    }
-
-    private void showExistsGraphAlert(String name) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Ooops...");
-        alert.setHeaderText(null);
-        alert.setContentText("Graph named " + "'" + name + "'" + " already exist.");
-        alert.showAndWait();
-    }
-
-    private void showFileAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Ooops...");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        MENU_BAR.getRepresentationMenu().getAdjacencyMatrixMenuItem().setOnAction(actionEvent -> Dialogs.showAdjacencyMatrix(TAB_PANE));
+        MENU_BAR.getRepresentationMenu().getDistanceMatrixMenuItem().setOnAction(actionEvent -> {
+            Dialogs.showDistanceMatrix(TAB_PANE);
+            AlgorithmSolver solver = new AlgorithmSolver(TAB_PANE.getActiveSheet().getGraph());
+            solver.dijkstra(0);
+        });
+        MENU_BAR.getRepresentationMenu().getWeightMatrixMenuItem().setOnAction(actionEvent -> Dialogs.showWeightMatrix(TAB_PANE));
     }
 
     public EventHandler<KeyEvent> keyReleasedHandler() {
         return new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (tabPane.getTabs().size() > 0) {
-                    Sheet sheet = getActiveSheet();
+                if (TAB_PANE.getTabs().size() > 0) {
+                    Sheet sheet = TAB_PANE.getActiveSheet();
                     switch (keyEvent.getCode()) {
                         case DELETE:
                             sheet.removeSelected();
@@ -209,16 +129,11 @@ public class AppConstructor {
                             if (keyEvent.isControlDown()) sheet.selectAll();
                             break;
                         case M:
-                            if (keyEvent.isControlDown()) showMatrix();
+                            if (keyEvent.isControlDown()) Dialogs.showAdjacencyMatrix(TAB_PANE);
                             break;
                     }
                 }
             }
         };
-    }
-
-    private void showMatrix() {
-        AdjacencyMatrix adjacencyMatrix = new AdjacencyMatrix(getActiveSheet().getGraph());
-        System.out.println(adjacencyMatrix);
     }
 }

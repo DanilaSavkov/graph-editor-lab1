@@ -10,6 +10,7 @@ public class Edge {
     public Edge(Vertex source, Vertex destination) {
         this.source = source;
         this.destination = destination;
+        this.weight = 0;
     }
 
     public Vertex getSource() {

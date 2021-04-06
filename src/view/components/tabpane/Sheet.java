@@ -1,4 +1,4 @@
-package view.components;
+package view.components.tabpane;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
@@ -19,17 +19,20 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Sheet extends Pane {
+    private static final double PREF_SIZE = 13000;
     private final Graph<GraphicalVertex, GraphicalEdge> graph;
     private List<Selectable> selected;
 
     public Sheet(String name) {
         graph = new Graph<>(name);
         selected = new ArrayList<>();
+        this.setPrefSize(PREF_SIZE, PREF_SIZE);
         setHandlers(null);
     }
 
     public Sheet(Graph<Vertex, Edge> graph) {
         this.graph = new Graph<>(graph.getName());
+        this.setPrefSize(PREF_SIZE, PREF_SIZE);
         for (Vertex vertex : graph.getVertices()) {
             GraphicalVertex graphicalVertex = new GraphicalVertex(vertex.getX(), vertex.getY());
             graphicalVertex.setIdentifier(vertex.getIdentifier());
@@ -146,12 +149,12 @@ public class Sheet extends Pane {
         selected = new ArrayList<>();
     }
 
-    protected void removeSelected() {
+    public void removeSelected() {
         for (GraphicalEdge edge : getSelectedEdges()) remove(edge);
         for (GraphicalVertex vertex : getSelectedVertices()) remove(vertex);
     }
 
-    protected void setLastSelectedId() {
+    public void setLastSelectedId() {
         if (!getSelectedVertices().isEmpty()) {
             Vertex vertex = getSelectedVertices().get(getSelectedVertices().size() - 1);
             unselectAll();
@@ -161,7 +164,7 @@ public class Sheet extends Pane {
         }
     }
 
-    protected void setLastSelectedWeight() {
+    public void setLastSelectedWeight() {
         if (!getSelectedEdges().isEmpty()) {
             Edge edge = getSelectedEdges().get(getSelectedEdges().size() - 1);
             unselectAll();
@@ -220,5 +223,23 @@ public class Sheet extends Pane {
                 }
             }
         };
+    }
+
+    protected double getGraphXPosition() {
+        if (graph.getVerticesCount() == 0) return 0.5;
+        double x = 0;
+        for (Vertex vertex : graph.getVertices()) {
+            x += vertex.getX();
+        }
+        return (x / graph.getVerticesCount()) / PREF_SIZE;
+    }
+
+    protected double getGraphYPosition() {
+        if (graph.getVerticesCount() == 0) return 0.5;
+        double y = 0;
+        for (Vertex vertex : graph.getVertices()) {
+            y += vertex.getY();
+        }
+        return (y / graph.getVerticesCount()) / PREF_SIZE;
     }
 }
