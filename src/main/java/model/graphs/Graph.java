@@ -64,4 +64,8 @@ public class Graph<V extends Vertex, E extends Edge> {
         }
         return null;
     }
+
+    public int getVertexIndex(V vertex) {
+        return  vertices.indexOf(find(vertex));
+    }
 }

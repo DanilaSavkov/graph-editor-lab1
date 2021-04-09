@@ -18,6 +18,7 @@ import view.components.tabpane.Sheet;
 import view.components.toolbar.AppToolBar;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class AppConstructor {
     private static final AppTabPane TAB_PANE = new AppTabPane();
@@ -105,7 +106,7 @@ public class AppConstructor {
         MENU_BAR.getRepresentationMenu().getDistanceMatrixMenuItem().setOnAction(actionEvent -> {
             Dialogs.showDistanceMatrix(TAB_PANE);
             AlgorithmSolver solver = new AlgorithmSolver(TAB_PANE.getActiveSheet().getGraph());
-            solver.dijkstra(0);
+            System.out.println(Arrays.toString(solver.dijkstra(solver.getGraph().getVertices().get(0))));
         });
         MENU_BAR.getRepresentationMenu().getWeightMatrixMenuItem().setOnAction(actionEvent -> Dialogs.showWeightMatrix(TAB_PANE));
     }
