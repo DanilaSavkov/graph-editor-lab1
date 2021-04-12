@@ -13,6 +13,12 @@ public class Edge {
         this.weight = 0;
     }
 
+    public Edge(Edge edge) {
+        this.source = edge.source;
+        this.destination = edge.destination;
+        this.weight = edge.weight;
+    }
+
     public Vertex getSource() {
         return source;
     }

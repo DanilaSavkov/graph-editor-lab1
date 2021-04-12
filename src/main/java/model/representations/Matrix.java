@@ -27,6 +27,10 @@ public abstract class Matrix<Type> {
         return graph;
     }
 
+    public Type getValue(int index1, int index2) {
+        return matrix.get(graph.getVertices().get(index1)).get(graph.getVertices().get(index2));
+    }
+
     private void buildMatrix() {
         buildEmptyMatrix();
         completeTheMatrix();

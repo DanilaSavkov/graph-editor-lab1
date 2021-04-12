@@ -25,7 +25,23 @@ public class GraphicalEdge extends Edge implements Graphical {
         line = new Line();
         configureLine();
 
-        text = new Text();
+        text = new Text(String.valueOf(this.getWeight()));
+        configureText();
+
+        selected = false;
+        focused = false;
+    }
+
+    public GraphicalEdge(Edge edge) {
+        super(edge);
+
+        frame = new Line();
+        configureFrame();
+
+        line = new Line();
+        configureLine();
+
+        text = new Text(String.valueOf(edge.getWeight()));
         configureText();
 
         selected = false;
@@ -170,7 +186,6 @@ public class GraphicalEdge extends Edge implements Graphical {
     private void configureText() {
         text.setFont(FONT);
         text.setFill(TEXT_FILL);
-        text.setText("");
 
         updateTextLocation();
         getSource().getShape().centerXProperty().addListener(event -> updateTextLocation());

@@ -10,10 +10,6 @@ public class WeightMatrix extends Matrix<Integer> {
         super(graph, INFINITY);
     }
 
-    public static int getINFINITY() {
-        return INFINITY;
-    }
-
     @Override
     protected void addEdgeToMatrix(Edge edge) {
         getMatrix().get(edge.getSource()).put(edge.getDestination(), edge.getWeight());

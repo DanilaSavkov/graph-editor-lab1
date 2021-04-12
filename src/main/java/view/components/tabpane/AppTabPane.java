@@ -14,6 +14,10 @@ public class AppTabPane extends TabPane {
         return (Sheet) ((ScrollPane) getActiveTab().getContent()).getContent();
     }
 
+    public void setActiveSheet(Sheet sheet) {
+        getActiveTab().setContent(sheetToScrollPane(sheet));
+    }
+
     private Tab getActiveTab() {
         return this.getSelectionModel().getSelectedItem();
     }

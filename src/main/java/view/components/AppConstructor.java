@@ -8,7 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import model.AlgorithmSolver;
+import model.algorithm.AlgorithmSolver;
 import model.edges.Edge;
 import model.graphs.Graph;
 import model.vertecies.Vertex;
@@ -18,7 +18,6 @@ import view.components.tabpane.Sheet;
 import view.components.toolbar.AppToolBar;
 
 import java.io.File;
-import java.util.Arrays;
 
 public class AppConstructor {
     private static final AppTabPane TAB_PANE = new AppTabPane();
@@ -77,7 +76,6 @@ public class AppConstructor {
                 Graph<Vertex, Edge> graph = GraphFileReader.read(Dialogs.getFileToOpenChoose());
                 if (TAB_PANE.contains(graph.getName())) return;
                 Sheet sheet = new Sheet(graph);
-                sheet.setHandlers(null);
                 TAB_PANE.addSheet(sheet);
             } catch (XMLReadingException e) {
                 Dialogs.showFileError(e.getMessage());
@@ -101,13 +99,16 @@ public class AppConstructor {
 
         MENU_BAR.getToolsMenu().getVertexModeMenuItem().setOnAction(TOOL_BAR::vertexButtonOnAction);
         MENU_BAR.getToolsMenu().getEdgeModeMenuItem().setOnAction(TOOL_BAR::edgeButtonOnAction);
+        MENU_BAR.getToolsMenu().getAlgorithmMenuItem().setOnAction(actionEvent -> {
+            AlgorithmSolver solver = new AlgorithmSolver(TAB_PANE.getActiveSheet().getGraph());
+            solver.algorithm();
+            Sheet sheet = new Sheet(solver.getGraph());
+            TAB_PANE.setActiveSheet(sheet);
+            TOOL_BAR.setSheet(sheet);
+        });
 
         MENU_BAR.getRepresentationMenu().getAdjacencyMatrixMenuItem().setOnAction(actionEvent -> Dialogs.showAdjacencyMatrix(TAB_PANE));
-        MENU_BAR.getRepresentationMenu().getDistanceMatrixMenuItem().setOnAction(actionEvent -> {
-            Dialogs.showDistanceMatrix(TAB_PANE);
-            AlgorithmSolver solver = new AlgorithmSolver(TAB_PANE.getActiveSheet().getGraph());
-            System.out.println(Arrays.toString(solver.dijkstra(solver.getGraph().getVertices().get(0))));
-        });
+        MENU_BAR.getRepresentationMenu().getDistanceMatrixMenuItem().setOnAction(actionEvent -> Dialogs.showDistanceMatrix(TAB_PANE));
         MENU_BAR.getRepresentationMenu().getWeightMatrixMenuItem().setOnAction(actionEvent -> Dialogs.showWeightMatrix(TAB_PANE));
     }
 

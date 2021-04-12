@@ -59,8 +59,17 @@ public class Graph<V extends Vertex, E extends Edge> {
     }
 
     public Vertex find(V vertex) {
-        for (Vertex graphVertex : getVertices()) {
+        for (Vertex graphVertex : vertices) {
             if (vertex.getX() == graphVertex.getX() && vertex.getY() == graphVertex.getY()) return graphVertex;
+        }
+        return null;
+    }
+
+    public Edge find(V source, V destination) {
+        for (Edge edge : edges) {
+            if (edge.contains(source) && edge.contains(destination)) {
+                return edge;
+            }
         }
         return null;
     }
