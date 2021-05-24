@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
+import model.edges.GraphicalArrow;
 import model.edges.GraphicalEdge;
 import model.vertecies.GraphicalVertex;
 import view.components.tabpane.Sheet;
@@ -73,9 +74,9 @@ public class AppToolBar extends ToolBar {
     private void buildNewEdge() {
         List<GraphicalVertex> selectedVertices = sheet.getSelectedVertices();
         if (selectedVertices.size() > 1) {
-            GraphicalVertex source = selectedVertices.get(selectedVertices.size() - 1);
-            GraphicalVertex destination = selectedVertices.get(selectedVertices.size() - 2);
-            GraphicalEdge edge = new GraphicalEdge(source, destination);
+            GraphicalVertex source = selectedVertices.get(selectedVertices.size() - 2);
+            GraphicalVertex destination = selectedVertices.get(selectedVertices.size() - 1);
+            GraphicalEdge edge = new GraphicalArrow(source, destination);
             sheet.add(edge);
         }
     }

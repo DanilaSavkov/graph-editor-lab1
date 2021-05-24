@@ -16,13 +16,13 @@ import java.io.IOException;
 public class GraphFileReader implements XMLConstants {
     private static Graph<Vertex, Edge> graph;
 
-    public static class XMLGraphReader extends DefaultHandler {
+    private static class XMLGraphReader extends DefaultHandler {
         private String identifier;
         private Vertex source;
         private Vertex destination;
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
             switch (qName) {
                 case VERTEX:
                     String identifier = attributes.getValue(IDENTIFIER);
@@ -53,10 +53,10 @@ public class GraphFileReader implements XMLConstants {
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
+        public void endElement(String uri, String localName, String qName) {
             if (qName.equals(EDGE)) {
                 Edge edge = new Edge(source, destination);
-                edge.setWeight(Integer.valueOf(identifier));
+                edge.setWeight(Double.parseDouble(identifier));
                 graph.add(edge);
             }
         }

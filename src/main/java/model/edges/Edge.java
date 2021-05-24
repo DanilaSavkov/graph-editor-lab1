@@ -5,7 +5,7 @@ import model.vertecies.Vertex;
 public class Edge {
     private Vertex source;
     private Vertex destination;
-    private int weight;
+    private double weight;
 
     public Edge(Vertex source, Vertex destination) {
         this.source = source;
@@ -35,11 +35,11 @@ public class Edge {
         this.destination = destination;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
-    public int getWeight() {
+    public double getWeight() {
         return weight;
     }
 

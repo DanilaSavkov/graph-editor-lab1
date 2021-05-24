@@ -80,7 +80,6 @@ public class AppConstructor {
             } catch (XMLReadingException e) {
                 Dialogs.showFileError(e.getMessage());
             } catch (IllegalArgumentException ignored) {
-
             }
         });
         MENU_BAR.getFileMenu().getSaveAsFileMenuItem().setOnAction(actionEvent -> {

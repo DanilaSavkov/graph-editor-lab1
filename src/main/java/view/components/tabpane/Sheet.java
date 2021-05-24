@@ -7,6 +7,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import model.edges.Edge;
+import model.edges.GraphicalArrow;
 import model.edges.GraphicalEdge;
 import model.graphs.Graph;
 import model.interfaces.Graphical;
@@ -42,7 +43,7 @@ public class Sheet extends Pane {
         for (Edge edge : graph.getEdges()) {
             GraphicalVertex source = (GraphicalVertex) this.graph.find(new GraphicalVertex(edge.getSource().getX(), edge.getSource().getY()));
             GraphicalVertex destination = (GraphicalVertex) this.graph.find(new GraphicalVertex(edge.getDestination().getX(), edge.getDestination().getY()));
-            GraphicalEdge graphicalEdge = new GraphicalEdge(source, destination);
+            GraphicalArrow graphicalEdge = new GraphicalArrow(source, destination);
             graphicalEdge.setWeight(edge.getWeight());
             graphicalEdge.setLineHandlers(null, graphicalEdge.mouseEnteredHandler(), graphicalEdge.mouseExitedHandler());
             add(graphicalEdge);
@@ -171,7 +172,7 @@ public class Sheet extends Pane {
             select((Selectable) edge);
             String userWeight = getUserWeight(edge);
             try {
-                if (userWeight != null) edge.setWeight(Integer.parseInt(userWeight));
+                if (userWeight != null) edge.setWeight(Double.parseDouble(userWeight));
             } catch (NumberFormatException e) {
                 showEdgeWeightAlert(userWeight);
             }

@@ -108,7 +108,7 @@ public class GraphicalEdge extends Edge implements Graphical {
     }
 
     @Override
-    public void setWeight(int weight) {
+    public void setWeight(double weight) {
         super.setWeight(weight);
         text.setText(String.valueOf(weight));
     }
